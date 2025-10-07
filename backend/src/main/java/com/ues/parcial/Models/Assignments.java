@@ -1,4 +1,4 @@
-package com.ues.parcial.Models;
+package com.ues.parcial.models;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.ues.parcial.Models.Enums.Status;
+import com.ues.parcial.models.enums.Status;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
