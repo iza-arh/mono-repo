@@ -1,9 +1,9 @@
-package com.ues.parcial.models;
+package com.ues.parcial.Models;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import com.ues.parcial.models.enums.NotificationChannel;
+import com.ues.parcial.Models.Enums.NotificationChannel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

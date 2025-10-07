@@ -1,4 +1,4 @@
-package com.ues.parcial.models;
+package com.ues.parcial.Models;
 
 import java.time.OffsetDateTime;
 

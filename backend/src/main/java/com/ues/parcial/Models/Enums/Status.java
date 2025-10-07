@@ -1,4 +1,4 @@
-package com.ues.parcial.models.enums;
+package com.ues.parcial.Models.Enums;
 
 public enum Status {
     REPORTED,
