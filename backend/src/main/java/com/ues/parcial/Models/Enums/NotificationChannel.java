@@ -1,4 +1,4 @@
-package com.ues.parcial.Models.Enums;
+package com.ues.parcial.models.enums;
 
 public enum NotificationChannel {
     EMAIL,

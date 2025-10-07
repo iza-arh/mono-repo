@@ -1,4 +1,4 @@
-package com.ues.parcial.Models;
+package com.ues.parcial.models;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
 
-import com.ues.parcial.Models.Enums.ReportState;
-import com.ues.parcial.Models.Enums.Severity;
+import com.ues.parcial.models.enums.ReportState;
+import com.ues.parcial.models.enums.Severity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
