@@ -9,18 +9,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ues.parcial.Models.Zone;
+import com.ues.parcial.dtos.zone.GeometryDto;
 import com.ues.parcial.dtos.zone.ZoneRequestDto;
 import com.ues.parcial.dtos.zone.ZoneResponseDto;
 import com.ues.parcial.dtos.zone.ZoneUpdateDto;
+import com.ues.parcial.exceptions.InvalidGeometryException;
 import com.ues.parcial.exceptions.ResourceAlreadyExistsException;
 import com.ues.parcial.exceptions.ResourceNotFoundException;
 import com.ues.parcial.repositories.ZoneRepository;
 import com.ues.parcial.utils.ListUtils;
 
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Coordinate;
+
 @Service
 public class ZoneService {
     
-    ZoneRepository zoneRepository;
+    private final ZoneRepository zoneRepository;
 
     public ZoneService(ZoneRepository zoneRepository){
         this.zoneRepository = zoneRepository;
@@ -28,37 +36,76 @@ public class ZoneService {
 
     @Transactional
     public Zone createZone(ZoneRequestDto dto) {
-
         // Capitalize the first letter of each word in the name
         String formattedName = WordUtils.capitalizeFully(dto.getName().trim());
 
         zoneRepository.findByNameIgnoreCase(formattedName)
-            .ifPresent(p -> { throw new ResourceAlreadyExistsException("There is already a zone with that name: " + dto.getName()); });;
+            .ifPresent(p -> { 
+                throw new ResourceAlreadyExistsException("There is already a zone with that name: " + dto.getName()); 
+            });
 
         Zone zone = new Zone();
         zone.setName(formattedName);
-        zone.setGeom(dto.getGeom());
+        
+        // Convert GeometryDto to Polygon - any exception will be handled by GlobalExceptionHandler
+        Polygon polygon = convertGeometryDtoToPolygon(dto.getGeom());
+        zone.setGeom(polygon);
+        
         zone.setMetadata(dto.getMetadata());
-        // createdAt y updatedAt are set automatically by the @PrePersist method in the Zone model
-
         return zoneRepository.save(zone);
+    }
+
+    // Converts a GeometryDto to a JTS Polygon with SRID 4326 (WGS84).
+    private Polygon convertGeometryDtoToPolygon(GeometryDto geometryDto) {
+        if (!"Polygon".equals(geometryDto.getType())) {
+            throw new InvalidGeometryException("Only 'Polygon' type is supported");
+        }
+        
+        List<List<List<Double>>> coordinates = geometryDto.getCoordinates();
+        if (coordinates == null || coordinates.isEmpty()) {
+            throw new InvalidGeometryException("Coordinates cannot be empty");
+        }
+        
+        // Create GeometryFactory with SRID 4326
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), 4326);
+        
+        // Convert coordinates to LinearRing
+        List<List<Double>> ring = coordinates.get(0); // First ring (exterior)
+        Coordinate[] coords = new Coordinate[ring.size()];
+        
+        for (int i = 0; i < ring.size(); i++) {
+            List<Double> coord = ring.get(i);
+            if (coord.size() < 2) {
+                throw new InvalidGeometryException("Each coordinate must have at least 2 values");
+            }
+            coords[i] = new Coordinate(coord.get(0), coord.get(1));
+        }
+        
+        // Create LinearRing and Polygon
+        LinearRing shell = geometryFactory.createLinearRing(coords);
+        return geometryFactory.createPolygon(shell);
     }
 
     @Transactional
     public Zone updateZone(UUID id, ZoneUpdateDto dto) {
-
         Zone zone = zoneRepository.findById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException("Zone not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Zone not found with ID: " + id));
 
         // Update only the fields that are not null in the DTO
-
         if (dto.getName() != null) {
             String formattedName = WordUtils.capitalizeFully(dto.getName().trim());
+            
+            zoneRepository.findByNameIgnoreCase(formattedName)
+                    .ifPresent(p -> { 
+                        throw new ResourceAlreadyExistsException("There is already a zone with that name: " + dto.getName()); 
+                    });
+
             zone.setName(formattedName);
         }
 
         if (dto.getGeom() != null) {
-            zone.setGeom(dto.getGeom());
+            Polygon polygon = convertGeometryDtoToPolygon(dto.getGeom());
+            zone.setGeom(polygon);
         }
 
         if (dto.getMetadata() != null) {

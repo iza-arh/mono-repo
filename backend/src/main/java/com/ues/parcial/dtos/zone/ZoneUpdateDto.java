@@ -2,8 +2,6 @@ package com.ues.parcial.dtos.zone;
 
 import java.util.Map;
 
-import org.locationtech.jts.geom.Polygon;
-
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,10 +10,10 @@ import lombok.Setter;
 @Setter
 public class ZoneUpdateDto {
 
-    @Size(max = 100, message = "El nombre de la zona no puede tener más de 100 caracteres.")
+    @Size(max = 100, message = "Name must be at most 100 characters.")
     private String name;
 
-    private Polygon geom;
+    private GeometryDto geom; // This will be converted to Polygon in the service layer.
 
     private Map<String, Object> metadata;
 }
