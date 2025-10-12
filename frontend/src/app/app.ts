@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { CategoriesFormComponent } from './components/categories-form-component/categories-form-component';
 
 @Component({
   selector: 'app-root',

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ues.parcial.Models.Category;
 import com.ues.parcial.dtos.category.CategoryRequestDto;
@@ -14,8 +15,6 @@ import com.ues.parcial.exceptions.ResourceAlreadyExistsException;
 import com.ues.parcial.exceptions.ResourceNotFoundException;
 import com.ues.parcial.repositories.CategoryRepository;
 import com.ues.parcial.utils.ListUtils;
-
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CategoryService {
@@ -55,28 +54,37 @@ public class CategoryService {
     // Update an existing category
     @Transactional
     public Category updateCategory(Long id, CategoryUpdateDto dto) {
-        
-        Category category = categoryRepository.findById(id)
-                                            .orElseThrow(() -> new ResourceNotFoundException("Zone not found with ID: " + id));
 
-        // Update only the fields that are not null in the DTO
+        // Fetch the category to update
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
+
+        // Update name if provided
         if (dto.getName() != null) {
             String formattedName = WordUtils.capitalizeFully(dto.getName().trim());
-        
+
+            // Check if another category (not the current one) already has this name
             categoryRepository.findByNameIgnoreCase(formattedName)
-            .ifPresent(c -> { throw new ResourceAlreadyExistsException("There is already a category with that name: " + formattedName); });
+                    .filter(c -> !c.getId().equals(id)) // Ignore the current category
+                    .ifPresent(c -> {
+                        throw new ResourceAlreadyExistsException(
+                                "There is already a category with that name: " + formattedName);
+                    });
 
             category.setName(formattedName);
         }
 
+        // Update code if provided
         if (dto.getCode() != null) {
             category.setCode(dto.getCode().trim());
         }
 
+        // Update active status if provided
         if (dto.getIsActive() != null) {
             category.setActive(dto.getIsActive());
         }
 
+        // Save and return updated category
         return categoryRepository.save(category);
     }
 
