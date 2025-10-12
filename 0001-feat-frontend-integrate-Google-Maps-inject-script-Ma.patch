@@ -1,0 +1,474 @@
+From 2f9789c00dba60ff93624d58d98f14fc0dd14e35 Mon Sep 17 00:00:00 2001
+From: Roberto Mena <robertomena52@gmail.com>
+Date: Sat, 11 Oct 2025 22:27:52 -0500
+Subject: [PATCH] feat(frontend): integrate Google Maps (inject script,
+ MapComponent, docs); ignore local index.html with API key
+
+---
+ frontend/.env.example                 |  3 ++
+ frontend/.gitignore                   |  3 ++
+ frontend/README-GOOGLE-MAPS.md        | 72 +++++++++++++++++++++++++++
+ frontend/package-lock.json            | 28 ++---------
+ frontend/package.json                 |  1 +
+ frontend/scripts/inject-google-key.js | 27 ++++++++++
+ frontend/src/app/app.html             |  2 +
+ frontend/src/app/app.ts               |  3 +-
+ frontend/src/app/map/map.component.ts | 66 ++++++++++++++++++++++++
+ frontend/src/index.html.template      | 14 ++++++
+ 10 files changed, 193 insertions(+), 26 deletions(-)
+ create mode 100644 frontend/.env.example
+ create mode 100644 frontend/README-GOOGLE-MAPS.md
+ create mode 100644 frontend/scripts/inject-google-key.js
+ create mode 100644 frontend/src/app/map/map.component.ts
+ create mode 100644 frontend/src/index.html.template
+
+diff --git a/frontend/.env.example b/frontend/.env.example
+new file mode 100644
+index 0000000..3149671
+--- /dev/null
++++ b/frontend/.env.example
+@@ -0,0 +1,3 @@
++# Example env for Google Maps
++# Copy this file to .env (do NOT commit .env) or set the env var in your shell / CI.
++GOOGLE_MAPS_API_KEY=
+diff --git a/frontend/.gitignore b/frontend/.gitignore
+index b1d225e..c93db4a 100644
+--- a/frontend/.gitignore
++++ b/frontend/.gitignore
+@@ -41,3 +41,6 @@ __screenshots__/
+ # System files
+ .DS_Store
+ Thumbs.db
++
++# Ignore local generated index that may contain API keys
++/src/index.html
+diff --git a/frontend/README-GOOGLE-MAPS.md b/frontend/README-GOOGLE-MAPS.md
+new file mode 100644
+index 0000000..ae82bf3
+--- /dev/null
++++ b/frontend/README-GOOGLE-MAPS.md
+@@ -0,0 +1,72 @@
++# Integración Google Maps (Frontend)
++
++Pasos para usar la API de Google Maps en este proyecto frontend:
++
++1. Asegúrate de tener una API key de Google Maps con las APIs necesarias habilitadas (Maps JavaScript API y Places API).
++2. En la terminal, desde `frontend/` exporta la variable de entorno:
++
++```zsh
++export GOOGLE_MAPS_API_KEY="YOUR_KEY_HERE"
++```
++
++3. Instala dependencias (si no está hecho):
++
++```zsh
++npm install
++```
++
++4. Para iniciar el dev server y que la llave se inyecte en `src/index.html` usa:
++
++```zsh
++npm run start:maps
++```
++
++El script `start:maps` ejecuta `node ./scripts/inject-google-key.js` (que reemplaza el placeholder en `src/index.html.template`) y luego lanza `ng serve`.
++
++Notas de seguridad
++- No comites tu API key al repositorio. Usa variables de entorno en tus máquinas o un secreto en CI.
++- Para producción, considera inyectar la key en tiempo de despliegue y restringir la key por dominios en Google Cloud Console.
++
++Componente de mapa
++- Se añadió `MapComponent` en `src/app/map/map.component.ts` y está declarado como standalone e importado en `App`.
++- El componente muestra un mapa y un campo de búsqueda (Places Autocomplete).
++ - Se añadió `MapComponent` en `src/app/map/map.component.ts` y está declarado como standalone e importado en `App`.
++ - El componente usa la Google Maps JavaScript API directamente (no depende de `@angular/google-maps`) y muestra un mapa y un campo de búsqueda (Places Autocomplete).
++
++Problemas comunes
++- Si `google` no está disponible cuando Angular inicializa, el componente hace polling breve para registrar Places Autocomplete.
++- Si tu Angular CLI o entorno no soporta `standalone` imports (Angular v14+ required), actualiza Angular. Este proyecto ya usa Angular 20.
++
++CI / Deployment (GitHub Actions example)
++-------------------------------------
++Para desplegar una demo o staging sin exponer la API key en el repo, guarda la clave como `GOOGLE_MAPS_API_KEY` en los Secrets del repositorio (Settings → Secrets → Actions) y añade un paso en tu workflow que inyecte la key antes de construir.
++
++Ejemplo (fragmento de GitHub Actions):
++
++```yaml
++- name: Inject Google Maps key
++	env:
++		GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
++	run: |
++		node frontend/scripts/inject-google-key.js
++
++- name: Build frontend
++	run: |
++		cd frontend
++		npm ci
++		npm run build
++```
++
++Después del build puedes desplegar los artefactos (GitHub Pages, Netlify, Vercel, S3...). Asegúrate de restringir la API key por dominios en Google Cloud Console (por ejemplo el dominio de staging) para mayor seguridad.
++
++Local (recordatorio rápido)
++--------------------------
++Cada desarrollador puede usar su propia key localmente:
++
++```zsh
++cd frontend
++export GOOGLE_MAPS_API_KEY="TU_API_KEY_LOCAL"
++npm install
++npm run start:maps
++```
++
+diff --git a/frontend/package-lock.json b/frontend/package-lock.json
+index ae2922f..29621a2 100644
+--- a/frontend/package-lock.json
++++ b/frontend/package-lock.json
+@@ -492,7 +492,6 @@
+       "resolved": "https://registry.npmjs.org/@angular/common/-/common-20.3.3.tgz",
+       "integrity": "sha512-iArFCXvgYJCpxLZv8o6rV7Cxuqv1hbndoeUmQgL7ekXwVS6BA49VErXbTPM+pfhAJ+v1fc/DG3rzBwXk3eW2lw==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.3.0"
+       },
+@@ -509,7 +508,6 @@
+       "resolved": "https://registry.npmjs.org/@angular/compiler/-/compiler-20.3.3.tgz",
+       "integrity": "sha512-7AUtF7PO8xo+jOgrhLRPXmt65M/KFuYIsVZGVLB1FTCUAPByFJEUYOSnUuHyvFQQqHesK4aYSP27slDpHH/PSA==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.3.0"
+       },
+@@ -523,7 +521,6 @@
+       "integrity": "sha512-kSIE6hkTiZGiJLyisp5Q6NXOHiDNOItp7N2HVNPrK1bqzM8foN6H6BE1a+LYO3Lwy3PkwQFzx03BnzxkM4sWng==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@babel/core": "7.28.3",
+         "@jridgewell/sourcemap-codec": "^1.4.14",
+@@ -556,7 +553,6 @@
+       "resolved": "https://registry.npmjs.org/@angular/core/-/core-20.3.3.tgz",
+       "integrity": "sha512-AWBCixxw4N9VgKT1uwrRPr1dH3CpT/ffcCsXJQ8TjzsKYjVBkXVht5OjtxJOWOQ2KaHwsGFEmDMv9fc1BHDFhQ==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.3.0"
+       },
+@@ -582,7 +578,6 @@
+       "resolved": "https://registry.npmjs.org/@angular/forms/-/forms-20.3.3.tgz",
+       "integrity": "sha512-Rv3sO1vOAbw03IRK30CB45eucxZ1rI0Jyaa6QVmDlOzQ4bktkanbGxQtaxBdc9bKPBO1SVx27eTbStR7i3BNRg==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.3.0"
+       },
+@@ -601,7 +596,6 @@
+       "resolved": "https://registry.npmjs.org/@angular/platform-browser/-/platform-browser-20.3.3.tgz",
+       "integrity": "sha512-RUWpg49GnXdINjomRFrE/SRioxEehYqUzDVskDWddNeNhV9Z21zeC6Ao2i5q8UKq0y/oq2ShX7XFLprxqLoLnQ==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.3.0"
+       },
+@@ -624,7 +618,6 @@
+       "resolved": "https://registry.npmjs.org/@angular/router/-/router-20.3.3.tgz",
+       "integrity": "sha512-IrO5GY/vmaWwNdfR51xswNnBSxeEuvQAUqK3H0UNxhZlIE9gUS6pbbSidGGrQOZK+i0nd/rDz7j+RV7h2NK9aA==",
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.3.0"
+       },
+@@ -669,7 +662,6 @@
+       "integrity": "sha512-yDBHV9kQNcr2/sUr9jghVyz9C3Y5G2zUM2H2lo+9mKv4sFgbA8s8Z9t8D1jiTkGoO/NoIfKMyKWr4s6CN23ZwQ==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@ampproject/remapping": "^2.2.0",
+         "@babel/code-frame": "^7.27.1",
+@@ -1620,7 +1612,6 @@
+       "integrity": "sha512-nqhDw2ZcAUrKNPwhjinJny903bRhI0rQhiDz1LksjeRxqa36i3l75+4iXbOy0rlDpLJGxqtgoPavQjmmyS5UJw==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@inquirer/checkbox": "^4.2.1",
+         "@inquirer/confirm": "^5.1.14",
+@@ -3621,7 +3612,6 @@
+       "integrity": "sha512-IbKooQVqUBrlzWTi79E8Fw78l8k1RNtlDDNWsFZs7XonuQSJ8oNYfEeclhprUldXISRMLzBpILuKgPlIxm+/Yw==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "undici-types": "~7.14.0"
+       }
+@@ -3955,7 +3945,6 @@
+         }
+       ],
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "baseline-browser-mapping": "^2.8.9",
+         "caniuse-lite": "^1.0.30001746",
+@@ -5041,7 +5030,6 @@
+       "integrity": "sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "accepts": "^2.0.0",
+         "body-parser": "^2.2.0",
+@@ -5994,8 +5982,7 @@
+       "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-5.9.0.tgz",
+       "integrity": "sha512-OMUvF1iI6+gSRYOhMrH4QYothVLN9C3EJ6wm4g7zLJlnaTl8zbaPOr0bTw70l7QxkoM7sVFOWo83u9B2Fe2Zng==",
+       "dev": true,
+-      "license": "MIT",
+-      "peer": true
++      "license": "MIT"
+     },
+     "node_modules/js-tokens": {
+       "version": "4.0.0",
+@@ -6080,7 +6067,6 @@
+       "integrity": "sha512-LrtUxbdvt1gOpo3gxG+VAJlJAEMhbWlM4YrFQgql98FwF7+K8K12LYO4hnDdUkNjeztYrOXEMqgTajSWgmtI/w==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "@colors/colors": "1.5.0",
+         "body-parser": "^1.19.0",
+@@ -6548,7 +6534,6 @@
+       "integrity": "sha512-SL0JY3DaxylDuo/MecFeiC+7pedM0zia33zl0vcjgwcq1q1FWWF1To9EIauPbl8GbMCU0R2e0uJ8bZunhYKD2g==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "cli-truncate": "^4.0.0",
+         "colorette": "^2.0.20",
+@@ -8227,7 +8212,6 @@
+       "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-7.8.2.tgz",
+       "integrity": "sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==",
+       "license": "Apache-2.0",
+-      "peer": true,
+       "dependencies": {
+         "tslib": "^2.1.0"
+       }
+@@ -8284,7 +8268,6 @@
+       "integrity": "sha512-9GUyuksjw70uNpb1MTYWsH9MQHOHY6kwfnkafC24+7aOMZn9+rVMBxRbLvw756mrBFbIsFg6Xw9IkR2Fnn3k+Q==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "chokidar": "^4.0.0",
+         "immutable": "^5.0.2",
+@@ -9115,8 +9098,7 @@
+       "version": "2.8.1",
+       "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz",
+       "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==",
+-      "license": "0BSD",
+-      "peer": true
++      "license": "0BSD"
+     },
+     "node_modules/tuf-js": {
+       "version": "3.1.0",
+@@ -9154,7 +9136,6 @@
+       "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
+       "dev": true,
+       "license": "Apache-2.0",
+-      "peer": true,
+       "bin": {
+         "tsc": "bin/tsc",
+         "tsserver": "bin/tsserver"
+@@ -9341,7 +9322,6 @@
+       "integrity": "sha512-4cKBO9wR75r0BeIWWWId9XK9Lj6La5X846Zw9dFfzMRw38IlTk2iCcUt6hsyiDRcPidc55ZParFYDXi0nXOeLQ==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "dependencies": {
+         "esbuild": "^0.25.0",
+         "fdir": "^6.5.0",
+@@ -9745,7 +9725,6 @@
+       "integrity": "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==",
+       "dev": true,
+       "license": "MIT",
+-      "peer": true,
+       "funding": {
+         "url": "https://github.com/sponsors/colinhacks"
+       }
+@@ -9764,8 +9743,7 @@
+       "version": "0.15.1",
+       "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.15.1.tgz",
+       "integrity": "sha512-XE96n56IQpJM7NAoXswY3XRLcWFW83xe0BiAOeMD7K5k5xecOeul3Qcpx6GqEeeHNkW5DWL5zOyTbEfB4eti8w==",
+-      "license": "MIT",
+-      "peer": true
++      "license": "MIT"
+     }
+   }
+ }
+diff --git a/frontend/package.json b/frontend/package.json
+index d39fc25..c8510eb 100644
+--- a/frontend/package.json
++++ b/frontend/package.json
+@@ -4,6 +4,7 @@
+   "scripts": {
+     "ng": "ng",
+     "start": "ng serve",
++    "start:maps": "node ./scripts/inject-google-key.js && ng serve",
+     "build": "ng build",
+     "watch": "ng build --watch --configuration development",
+     "test": "ng test"
+diff --git a/frontend/scripts/inject-google-key.js b/frontend/scripts/inject-google-key.js
+new file mode 100644
+index 0000000..60239d2
+--- /dev/null
++++ b/frontend/scripts/inject-google-key.js
+@@ -0,0 +1,27 @@
++/*
++ Simple script to inject the Google Maps JS API script tag into frontend/src/index.html
++ Usage: node ./scripts/inject-google-key.js <GOOGLE_MAPS_API_KEY>
++ It will copy src/index.html.template -> src/index.html replacing {{GOOGLE_MAPS_SCRIPT}} placeholder.
++*/
++const fs = require('fs');
++const path = require('path');
++
++const key = process.env.GOOGLE_MAPS_API_KEY || process.argv[2];
++if (!key) {
++  console.error('ERROR: GOOGLE_MAPS_API_KEY not provided. Set env var or pass as arg.');
++  process.exit(1);
++}
++
++const tmplPath = path.join(__dirname, '..', 'src', 'index.html.template');
++const outPath = path.join(__dirname, '..', 'src', 'index.html');
++
++if (!fs.existsSync(tmplPath)) {
++  console.error('ERROR: template not found at', tmplPath);
++  process.exit(1);
++}
++
++let content = fs.readFileSync(tmplPath, 'utf8');
++const scriptTag = `<script async defer src="https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places"></script>`;
++content = content.replace(/{{GOOGLE_MAPS_SCRIPT}}/g, scriptTag);
++fs.writeFileSync(outPath, content, 'utf8');
++console.log('Wrote', outPath);
+diff --git a/frontend/src/app/app.html b/frontend/src/app/app.html
+index 447e549..01ab64d 100644
+--- a/frontend/src/app/app.html
++++ b/frontend/src/app/app.html
+@@ -341,3 +341,5 @@
+ 
+ 
+ <router-outlet />
++
++<app-map></app-map>
+diff --git a/frontend/src/app/app.ts b/frontend/src/app/app.ts
+index ade0fcb..b77ad2c 100644
+--- a/frontend/src/app/app.ts
++++ b/frontend/src/app/app.ts
+@@ -1,9 +1,10 @@
+ import { Component, signal } from '@angular/core';
+ import { RouterOutlet } from '@angular/router';
++import { MapComponent } from './map/map.component';
+ 
+ @Component({
+   selector: 'app-root',
+-  imports: [RouterOutlet],
++  imports: [RouterOutlet, MapComponent],
+   templateUrl: './app.html',
+   styleUrl: './app.css'
+ })
+diff --git a/frontend/src/app/map/map.component.ts b/frontend/src/app/map/map.component.ts
+new file mode 100644
+index 0000000..eb4ac18
+--- /dev/null
++++ b/frontend/src/app/map/map.component.ts
+@@ -0,0 +1,66 @@
++import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
++
++@Component({
++  selector: 'app-map',
++  standalone: true,
++  template: `
++    <div class="map-wrapper">
++      <input #searchBox class="map-search" placeholder="Buscar lugar..." />
++      <div #mapContainer class="map-container" style="height:400px;width:100%;"></div>
++    </div>
++  `,
++  styles: [
++    `
++    .map-wrapper { width: 100%; max-width: 900px; margin-top: 1.5rem; }
++    .map-search { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; box-sizing: border-box; }
++    `
++  ]
++})
++export class MapComponent implements AfterViewInit, OnDestroy {
++  @ViewChild('searchBox', { static: false }) searchBox!: ElementRef<HTMLInputElement>;
++  @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef<HTMLDivElement>;
++
++  private map: any = null;
++  private autocomplete: any = null;
++
++  ngAfterViewInit(): void {
++    const init = () => {
++      const google = (window as any).google;
++      if (!google || !google.maps) return false;
++
++      // create map
++      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
++        center: { lat: -34.397, lng: 150.644 },
++        zoom: 8,
++      });
++
++      // create autocomplete
++      this.autocomplete = new google.maps.places.Autocomplete(this.searchBox.nativeElement);
++      this.autocomplete.addListener('place_changed', () => {
++        const place = this.autocomplete.getPlace();
++        if (!place.geometry || !place.geometry.location) return;
++        this.map.setCenter(place.geometry.location);
++        this.map.setZoom(15);
++      });
++
++      return true;
++    };
++
++    if (!(window as any).google || !(window as any).google.maps) {
++      const interval = setInterval(() => {
++        if (init()) clearInterval(interval);
++      }, 200);
++    } else {
++      init();
++    }
++  }
++
++  ngOnDestroy(): void {
++    // cleanup listeners if necessary
++    try {
++      if (this.autocomplete && this.autocomplete.unbindAll) this.autocomplete.unbindAll();
++    } catch (e) {
++      // ignore
++    }
++  }
++}
+diff --git a/frontend/src/index.html.template b/frontend/src/index.html.template
+new file mode 100644
+index 0000000..0765b07
+--- /dev/null
++++ b/frontend/src/index.html.template
+@@ -0,0 +1,14 @@
++<!doctype html>
++<html lang="en">
++<head>
++  <meta charset="utf-8">
++  <title>Frontend</title>
++  <base href="/">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <link rel="icon" type="image/x-icon" href="favicon.ico">
++  {{GOOGLE_MAPS_SCRIPT}}
++</head>
++<body>
++  <app-root></app-root>
++</body>
++</html>
+-- 
+2.42.0
+
