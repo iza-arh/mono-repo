@@ -1,0 +1,27 @@
+<div class="flex justify-content-center align-items-center h-screen">
+    <p-card header="Create new category">
+        <form #CategoryForm="ngForm" (ngSubmit)="createOrUpdateCategory(CategoryForm.value,CategoryForm)">
+            <div class="flex-column justify-content-center mt-5">
+                <p-floatlabel>
+                    <input pInputText id="nameInput" autocomplete="off" name="name" [(ngModel)]="category.name" required #nameCtrl="ngModel"/>
+                    <label for="nameInput">Name</label>
+                </p-floatlabel>
+                <div *ngIf="nameCtrl.invalid && nameCtrl.touched" class="text-center red-text mt-1">
+                    Name is required!
+                </div>
+            </div>
+            <div class="flex-column justify-content-center mt-5">
+                <p-floatlabel>
+                    <input pInputText id="codeInput" autocomplete="off" name="code" [(ngModel)]="category.code" required #codeCtrl="ngModel"/>
+                    <label for="codeInput">Code</label>
+                </p-floatlabel>
+                <div *ngIf="codeCtrl.invalid && codeCtrl.touched" class="text-center red-text mt-1">
+                    Code is required!
+                </div>
+            </div>
+            <div class="flex justify-content-center mt-5">
+                <p-button label="Submit" type="submit" [disabled]="CategoryForm.invalid"/>
+            </div>
+        </form>
+    </p-card>
+</div>
