@@ -92,14 +92,21 @@ public class ZoneService {
                 .orElseThrow(() -> new ResourceNotFoundException("Zone not found with ID: " + id));
 
         // Update only the fields that are not null in the DTO
+
         if (dto.getName() != null) {
             String formattedName = WordUtils.capitalizeFully(dto.getName().trim());
-            
-            zoneRepository.findByNameIgnoreCase(formattedName)
-                    .ifPresent(p -> { 
-                        throw new ResourceAlreadyExistsException("There is already a zone with that name: " + dto.getName()); 
-                    });
 
+            // If the name is changing, check for uniqueness among active zones
+            String currentName = zone.getName() == null ? "" : zone.getName().trim();
+
+            if (!formattedName.equalsIgnoreCase(currentName)) {
+                // Check if another active zone (not the current one) already has this name
+                boolean exists = zoneRepository.existsByNameIgnoreCaseAndIsActiveTrueAndIdNot(formattedName, id);
+
+                if (exists) {
+                    throw new ResourceAlreadyExistsException("There is already an active zone with that name: " + formattedName);
+                }
+            }
             zone.setName(formattedName);
         }
 
@@ -110,6 +117,10 @@ public class ZoneService {
 
         if (dto.getMetadata() != null) {
             zone.setMetadata(dto.getMetadata());
+        }
+
+        if (dto.getIsActive() != null) {
+            zone.setActive(dto.getIsActive());
         }
 
         return zoneRepository.save(zone);
@@ -123,7 +134,7 @@ public class ZoneService {
     
     @Transactional(readOnly = true)
     public List<Zone> getAllZones() {
-        return ListUtils.emptyIfNull(zoneRepository.findAll());
+        return ListUtils.emptyIfNull(zoneRepository.findByIsActiveTrue());
     }
 
     // Convert a Zone entity to a ZoneResponseDto

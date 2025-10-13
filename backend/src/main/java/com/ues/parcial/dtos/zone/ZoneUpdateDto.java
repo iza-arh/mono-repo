@@ -15,5 +15,7 @@ public class ZoneUpdateDto {
 
     private GeometryDto geom; // This will be converted to Polygon in the service layer.
 
+    private Boolean isActive;
+
     private Map<String, Object> metadata;
 }

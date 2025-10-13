@@ -17,6 +17,7 @@ public class ZoneAdminResponseDto {
     private String name;
     private Polygon geom;
     private Map<String, Object> metadata;
+    private boolean isActive;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 

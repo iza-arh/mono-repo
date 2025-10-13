@@ -15,4 +15,13 @@ public interface ZoneRepository extends JpaRepository<Zone, UUID> {
 
     // It finds a zone by its name ingnoring case.
     public Optional<Zone> findByNameIgnoreCase(String name);
+
+    // It retrieves all zones that are marked as active.
+    List<Zone> findByIsActiveTrue();
+
+    // It checks if a zone with the given name exists, ignoring case and considering only active zones.
+    boolean existsByNameIgnoreCaseAndIsActiveTrue(String name);
+
+    // It checks if a zone with the given name exists, ignoring case and considering only active zones, excluding a specific zone by its ID.
+    boolean existsByNameIgnoreCaseAndIsActiveTrueAndIdNot(String name, UUID id);
 }
