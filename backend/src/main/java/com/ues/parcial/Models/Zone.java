@@ -46,6 +46,9 @@ public class Zone {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> metadata;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime createdAt;
 
