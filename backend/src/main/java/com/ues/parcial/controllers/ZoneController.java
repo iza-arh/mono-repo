@@ -41,6 +41,12 @@ public class ZoneController {
         return ResponseEntity.ok(zoneService.toResponseDto(zoneService.updateZone(id, dto)));
     }
 
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivateZone(@PathVariable UUID id) {
+        zoneService.updateZoneStatus(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getZoneById(@PathVariable UUID id) {
         return ResponseEntity.ok(zoneService.toResponseDto(zoneService.getZoneById(id)));
