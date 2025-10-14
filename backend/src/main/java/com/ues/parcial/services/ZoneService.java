@@ -119,10 +119,19 @@ public class ZoneService {
             zone.setMetadata(dto.getMetadata());
         }
 
-        if (dto.getIsActive() != null) {
-            zone.setActive(dto.getIsActive());
+        return zoneRepository.save(zone);
+    }
+
+    @Transactional
+    public Zone updateZoneStatus(UUID id) {
+        Zone zone = zoneRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Zone not found with ID: " + id));
+        
+        if (!zone.isActive()) {
+            throw new IllegalStateException("Zone is already inactive");
         }
 
+        zone.setActive(false); // Soft delete by setting isActive to false
         return zoneRepository.save(zone);
     }
 
