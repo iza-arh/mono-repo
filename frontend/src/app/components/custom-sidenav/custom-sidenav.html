@@ -1,0 +1,11 @@
+<h2 class="text-xl font-semibold px-4 py-2 mb-2" [class.text-center]="collapsed()">
+    {{!collapsed() ? 'UrbanoFix' : 'U'}}
+</h2>
+<ul class="p-2 flex flex-col w-full gap-2">
+    <li *ngFor="let item of items()" class="hover:bg-black/10 w-full p-2 rounded-md">
+        <a [routerLink]="[item.path]" class=" flex items-center gap-2" [class.justify-center]="collapsed()">
+            <mat-icon>{{item.icon}}</mat-icon>
+            <span *ngIf="!collapsed()">{{item.label}}</span>
+        </a>
+    </li>
+</ul>
