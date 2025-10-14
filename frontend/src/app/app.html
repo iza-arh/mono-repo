@@ -1,6 +1,9 @@
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
-<router-outlet />
-
-<app-map></app-map>
+<mat-sidenav-container class="h-screen">
+    <mat-sidenav opened mode="side" class="!bg-black/5 rounded-none border-gray-200" [style.width.px]="width()">
+        <app-custom-sidenav [collapsed]="collapsed()"></app-custom-sidenav>
+    </mat-sidenav>
+    <mat-sidenav-content [style.margin-left.px]="width()">
+        <app-header (onToggle)="collapsed.set(!collapsed())"></app-header>
+        <router-outlet />
+    </mat-sidenav-content>
+</mat-sidenav-container>
