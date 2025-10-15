@@ -41,6 +41,12 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.toResponseDto(categoryService.updateCategory(id, dto)));
     }
 
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivateCategory(@PathVariable Long id) {
+        categoryService.updateCategoryStatus(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.toResponseDto(categoryService.getCategoryById(id)));

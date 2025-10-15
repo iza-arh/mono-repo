@@ -79,12 +79,20 @@ public class CategoryService {
             category.setCode(dto.getCode().trim());
         }
 
-        // Update active status if provided
-        if (dto.getIsActive() != null) {
-            category.setActive(dto.getIsActive());
+        return categoryRepository.save(category);
+    }
+
+    // Soft delete a category by setting its isActive field to false
+    @Transactional
+    public Category updateCategoryStatus (Long id){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
+        
+        if (!category.isActive()) {
+            throw new IllegalStateException("Category is already inactive");
         }
 
-        // Save and return updated category
+        category.setActive(false); // Soft delete by setting isActive to false
         return categoryRepository.save(category);
     }
 
