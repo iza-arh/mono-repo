@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/categories")
 public class CategoryController {
     
-    CategoryService categoryService;
+    private final CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
