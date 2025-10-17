@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +20,14 @@ import com.ues.parcial.services.ZoneService;
 
 import jakarta.validation.Valid;
 
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/zones")
 public class ZoneController {
-    
+
     private final ZoneService zoneService;
 
-    public ZoneController(ZoneService zoneService){
+    public ZoneController(ZoneService zoneService) {
         this.zoneService = zoneService;
     }
 

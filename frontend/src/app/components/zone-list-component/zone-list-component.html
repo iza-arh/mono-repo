@@ -1,0 +1,33 @@
+<div class="card" *ngIf="!isActive">
+    <p-table [value]="zones">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Name</th>
+                <th>Polygon</th>
+                <th>Options</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-zone let-i="rowIndex">
+            <tr>
+                <td>
+                    {{zone.name}}
+                </td>
+                <td>
+                    <p-button label="Coordinates" severity="help" class="mr-3" (click)="showPolygon(i)" />
+                </td>
+                <td>
+                    <p-button label="Edit" severity="info" class="mr-3" [routerLink]="['/zone-form', zone.id]"/>
+                    <p-button label="Delete" severity="danger" class="mr-3" (click)="deleteZone(zone.id)"/>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<div *ngIf="isActive" class="map-container relative">
+    <div class="flex justify-content-center">
+        <p-button label="Complete" severity="success" class="overlay-button" (click)="hidePolygon()" />
+    </div>
+    <google-map class="map" height="100%" width="100%" [center]="center" [zoom]="zoom">
+        <map-polygon [paths]="vertices"></map-polygon>
+    </google-map>
+</div>

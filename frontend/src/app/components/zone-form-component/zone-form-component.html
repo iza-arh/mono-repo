@@ -1,0 +1,33 @@
+<div *ngIf="!isActive" class="card flex justify-content-center align-items-center h-screen">
+    <form #ZoneForm="ngForm" (ngSubmit)="createOrUpdateZone(ZoneForm.value, ZoneForm)">
+        <p-card header="Create new zone">
+            <div class="flex-column justify-content-center mt-5">
+                <p-floatlabel>
+                    <input pInputText id="nameInput" autocomplete="off" name="name" [(ngModel)]="myZone.name" required
+                        #nameCtrl="ngModel" />
+                    <label for="nameInput">Name</label>
+                </p-floatlabel>
+                <div *ngIf="nameCtrl.invalid && nameCtrl.touched" class="text-center red-text mt-1">
+                    Name is required!
+                </div>
+            </div>
+            <div class="flex justify-content-center mt-5" name="polygon">
+                <p-button label="Get polygon" severity="help" (click)="showMap()" />
+            </div>
+            <div class="flex justify-content-center mt-5">
+                <p-button label="Submit" type="submit" severity="success" />
+            </div>
+        </p-card>
+    </form>
+</div>
+
+<div *ngIf="isActive" class="map-container relative">
+    <div class="flex justify-content-center">
+        <p-button label="Complete" severity="success" class="overlay-button" (click)="hideMap()" />
+    </div>
+    <google-map class="map" height="100%" width="100%" [center]="center" [zoom]="zoom" (mapClick)="addVertex($event)"  [options]="mapOptions">
+        <map-polygon [paths]="vertices"></map-polygon>
+        <map-advanced-marker *ngFor="let vertex of vertices let i = index" [position]="{ lat: vertex.lat, lng: vertex.lng }" (mapClick)="removeVertex(i)">
+        </map-advanced-marker>
+    </google-map>
+</div>
