@@ -22,7 +22,8 @@ export class CustomSidenav {
     { path: '/category-form', icon: 'description', label: 'add category' },
     { path: '/category-list', icon: 'view_list', label: 'show categories' },
     { path: '/zone-form', icon: 'description', label: 'add zone' },
-    { path: '/zone-list', icon: 'view_list', label: 'show zones' }
+    { path: '/zone-list', icon: 'view_list', label: 'show zones' },
+    { path: '/user-list', icon: 'view_list', label: 'show users' }
   ]);
 
   collapsed = input.required<boolean>()
