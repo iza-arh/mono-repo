@@ -106,6 +106,9 @@ public class Report {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> metadata;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     @PrePersist
     public void prePersist() {
         createdAt = OffsetDateTime.now();
