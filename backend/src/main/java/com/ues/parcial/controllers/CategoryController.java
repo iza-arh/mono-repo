@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/categories")
 public class CategoryController {
     
-    CategoryService categoryService;
+    private final CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
@@ -39,6 +39,12 @@ public class CategoryController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateDto dto) {
         return ResponseEntity.ok(categoryService.toResponseDto(categoryService.updateCategory(id, dto)));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivateCategory(@PathVariable Long id) {
+        categoryService.updateCategoryStatus(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
