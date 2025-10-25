@@ -20,9 +20,7 @@ interface MenuItem {
 export class CustomSidenav {
   items = signal<MenuItem[]>([
     { path: '/category-form', icon: 'description', label: 'add category' },
-    { path: '/category-list', icon: 'view_list', label: 'show categories' },
-    { path: '/zone-form', icon: 'description', label: 'add zone' },
-    { path: '/zone-list', icon: 'view_list', label: 'show zones' }
+    { path: '/category-list', icon: 'view_list', label: 'show categories' }
   ]);
 
   collapsed = input.required<boolean>()

@@ -25,10 +25,6 @@ export class CategoryService {
     return this.http.patch('http://localhost:8080/api/categories/' + id, categoryData);
   }
 
-  deleteCategory(id: number) {
-    return this.http.patch<void>('http://localhost:8080/api/categories/' + id + '/deactivate', {});
-  }
-
 
 
 }
