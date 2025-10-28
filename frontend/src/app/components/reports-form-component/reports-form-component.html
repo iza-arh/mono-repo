@@ -1,0 +1,46 @@
+<div class="card flex justify-content-center">
+    <p-card header="Create new report" class="mt-5 w-6">
+        <form #reportForm="ngForm" (ngSubmit)="createReport(reportForm.value, reportForm)">
+            <div class="flex flex-column justify-content-center align-items-center mt-5">
+                <p-floatlabel>
+                    <input pInputText id="titleInput" autocomplete="off" name="title" [(ngModel)]="report.title"
+                        required #titleCtrl="ngModel" />
+                    <label for="titleInput">Title</label>
+                </p-floatlabel>
+                <div *ngIf="titleCtrl.invalid && titleCtrl.touched" class="text-center red-text mt-1">
+                    Title is required!
+                </div>
+            </div>
+            <div class="flex flex-column justify-content-center align-items-center mt-5">
+                <p-floatlabel>
+                    <textarea pTextarea id="descriptionInput" [(ngModel)]="report.description" rows="5" cols="30"
+                        style="resize: none" name="description" required #descriptionCtrl="ngModel"></textarea>
+                    <label for="descriptionInput">Description</label>
+                </p-floatlabel>
+                <div *ngIf="descriptionCtrl.invalid && descriptionCtrl.touched" class="text-center red-text mt-1">
+                    Description is required!
+                </div>
+            </div>
+            <div class="flex justify-content-center mt-5 gap-3">
+                <p-select [options]="categories" [(ngModel)]="report.categoryId" [checkmark]="true" optionLabel="name"
+                    name="categoryId" optionValue="id" [showClear]="true" placeholder="Select a category" />
+                <p-select [options]="zones" [(ngModel)]="report.zoneId" [checkmark]="true" optionLabel="name"
+                    name="zoneId" optionValue="id" [showClear]="true" placeholder="Select a zone" />
+            </div>
+
+            <div class="flex justify-content-center mt-5 gap-3">
+                <p-select [options]="severity" [(ngModel)]="report.severity" [checkmark]="true" name="severity"
+                 [showClear]="true" placeholder="Select severity" />
+            </div>
+
+            <div class="card flex flex-wrap justify-content-center mt-5">
+                <p-toast />
+                <p-fileupload #fu mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" accept="image/*"
+                    name="photo" maxFileSize="1000000" (onSelect)="onFileSelect($event)" />
+            </div>
+            <div class="flex justify-content-center mt-5">
+                <p-button label="Submit" type="submit" severity="success" />
+            </div>
+        </form>
+    </p-card>
+</div>

@@ -1,45 +1,20 @@
 <div class="flex justify-content-center align-items-center h-screen">
     <form #UserForm="ngForm" (ngSubmit)="updateUser(UserForm.value, UserForm)">
         <p-card header="Edit user">
-            <div class="flex flex-column justify-content-center align-items-center mt-5">
-                <p-floatlabel>
-                    <input pInputText id="nameInput" autocomplete="off" name="name" [(ngModel)]="user.name" required
-                        #nameCtrl="ngModel" />
-                    <label for="nameInput">Name</label>
-                </p-floatlabel>
-                <div *ngIf="nameCtrl.invalid && nameCtrl.touched" class="text-center red-text mt-1">
-                    Name is required!
-                </div>
+            <div class="flex gap-3 mt-5">
+                <h2>Name</h2>
+                <p>{{user.name}}</p>
             </div>
-            <div class="flex flex-column justify-content-center align-items-center mt-5">
-                <p-floatlabel>
-                    <input pInputText id="lastNameInput" autocomplete="off" name="lastName" [(ngModel)]="user.lastName"
-                        required #lastNameCtrl="ngModel" />
-                    <label for="lastNameInput"> Last name</label>
-                </p-floatlabel>
-                <div *ngIf="lastNameCtrl.invalid && lastNameCtrl.touched" class="text-center red-text mt-1">
-                    Last name is required!
-                </div>
+            <div class="flex gap-3 mt-5">
+                <h2>Last name</h2>
+                <p>{{user.lastName}}</p>
             </div>
-            <div class="flex flex-column justify-content-center align-items-center mt-5">
-                <p-floatlabel>
-                    <input pInputText id="email" autocomplete="off" name="email" [(ngModel)]="user.email" required
-                        #emailCtrl="ngModel" />
-                    <label for="email">Email</label>
-                </p-floatlabel>
-                <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="text-center red-text mt-1">
-                    Email is required!
-                </div>
+            <div class="flex gap-3 mt-5">
+                <h2>Email</h2>
+                <p>{{user.email}}</p>
             </div>
-            <div class="flex flex-column justify-content-center align-items-center mt-5">
-                <p-floatlabel>
-                    <input pInputText id="role" autocomplete="off" name="role" [(ngModel)]="user.role" required
-                        #roleCtrl="ngModel" />
-                    <label for="role">Role</label>
-                </p-floatlabel>
-                <div *ngIf="roleCtrl.invalid && roleCtrl.touched" class="text-center red-text mt-1">
-                    Role is required!
-                </div>
+            <div class="flex justify-content-center mt-5">
+                <p-select [options]="roles" [(ngModel)]="user.role" placeholder="Select a Role" name="role" />
             </div>
             <div class="flex flex-column justify-content-center align-items-center mt-5">
                 <p-floatlabel>
@@ -47,9 +22,6 @@
                         #phoneCtrl="ngModel" />
                     <label for="phone">Phone</label>
                 </p-floatlabel>
-                <div *ngIf="phoneCtrl.invalid && phoneCtrl.touched" class="text-center red-text mt-1">
-                    Phone is required!
-                </div>
             </div>
             <div class="flex justify-content-center mt-5">
                 <p-button label="Submit" type="submit" severity="success" />

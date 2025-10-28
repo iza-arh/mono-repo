@@ -5,6 +5,7 @@ import { ZoneFormComponent } from './components/zone-form-component/zone-form-co
 import { ZoneListComponent } from './components/zone-list-component/zone-list-component';
 import { UserListComponent } from './components/user-list-component/user-list-component';
 import { UserFormComponent } from './components/user-form-component/user-form-component';
+import { ReportsFormComponent } from './components/reports-form-component/reports-form-component';
 
 export const routes: Routes = [
     {
@@ -42,6 +43,10 @@ export const routes: Routes = [
     {
         path: 'user-form',
         component: UserFormComponent
-    }
+    },
+    {
+        path: 'report-form',
+        component: ReportsFormComponent
+    },
 
 ];
