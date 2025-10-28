@@ -2,19 +2,17 @@ package com.ues.parcial.Models;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import com.ues.parcial.Models.Enums.UserRole;
+import com.ues.parcial.exceptions.InvalidPhoneFormatException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -28,9 +26,8 @@ import lombok.Data;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", updatable = false, nullable = false)
-    private UUID id;
+    @Column(name = "user_id", nullable = false)
+    private String id;
 
     @OneToMany(mappedBy = "uploadedBy")
     private List<ReportPhotos> reportPhotos;
@@ -44,8 +41,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    /*@Column(name = "password_hash", nullable = false)
+    private String passwordHash;*/
 
     @Column(nullable = false)
     private String name;
@@ -58,7 +55,7 @@ public class User {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private UserRole role = UserRole.CITIZEN;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String phone;
 
     @Column(name = "is_active", nullable = false)
@@ -79,6 +76,16 @@ public class User {
     @PreUpdate
     public void preUpdate() {
         updatedAt = OffsetDateTime.now();
+    }
+
+    public static String validatePhone(String phone) {
+        if (phone == null) return null;
+        if (!phone.matches("\\d{8}|\\d{4}-\\d{4}")) {
+            throw new InvalidPhoneFormatException(
+                "Invalid phone format. Must be 12345678 or 1234-5678"
+            );
+        }
+        return phone;
     }
 
 }
