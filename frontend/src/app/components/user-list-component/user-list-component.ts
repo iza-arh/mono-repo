@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { User } from '../../models/interface/user.interface';
+import { UserInterface } from '../../models/interface/user.interface';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
@@ -13,7 +13,7 @@ import { RouterLink } from '@angular/router';
 })
 export class UserListComponent {
 
-  users: User[] = [{
+  users: UserInterface[] = [{
     id: 1,
     email: 'john.doe@example.com',
     name: 'John',

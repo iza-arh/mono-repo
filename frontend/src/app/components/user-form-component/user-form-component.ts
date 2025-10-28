@@ -7,12 +7,13 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { User } from '../../models/interface/user.interface';
+import { UserInterface } from '../../models/interface/user.interface';
+import { Select } from 'primeng/select';
 
 @Component({
   selector: 'app-user-form-component',
   standalone: true,
-  imports: [CardModule, FormsModule, FloatLabel, InputTextModule, CommonModule, ButtonModule],
+  imports: [CardModule, FormsModule, FloatLabel, InputTextModule, CommonModule, ButtonModule, Select],
   templateUrl: './user-form-component.html',
   styleUrl: './user-form-component.css'
 })
@@ -22,11 +23,13 @@ export class UserFormComponent implements OnInit {
 
   }
 
-  user: User = {
+  roles: string[] = ['CITIZEN', 'TECHNICIAN', 'MANAGER', 'ADMIN']
+
+  user: UserInterface = {
     id: null,
-    email: '',
-    name: '',
-    lastName: '',
+    email: 'rh23003@ues.edu.sv',
+    name: 'Isai',
+    lastName: 'Alberto',
     role: '',
     phone: ''
   }
@@ -42,8 +45,10 @@ export class UserFormComponent implements OnInit {
     Form.resetForm(this.user);
   }
 
-  updateUser(FormValues: User, Form: NgForm) {
-      this.clearForm(Form)
+  updateUser(formValues: UserInterface, Form: NgForm) {
+    this.user.role = formValues.role;
+    this.user.phone = formValues.phone;
+    this.clearForm(Form)
   }
 
   ngOnInit(): void {
