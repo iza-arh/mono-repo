@@ -36,6 +36,11 @@ public class GlobalExceptionHandler  {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidPhoneFormatException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidPhone(InvalidPhoneFormatException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     // When validation on an argument annotated with @Valid fails (for example @NotNull, @Size, etc.)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
@@ -90,6 +95,24 @@ public class GlobalExceptionHandler  {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred: " + ex.getMessage());
+    }
+
+    // When there is an email mismatch during operations that require email confirmation
+    @ExceptionHandler(EmailMismatchException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailMismatch(EmailMismatchException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    // When there is an ID mismatch during operations that require ID confirmation
+    @ExceptionHandler(IdMismatchException.class)
+    public ResponseEntity<Map<String, Object>> handleIdMismatch(IdMismatchException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    // When trying to use a phone number that is already in use
+    @ExceptionHandler(PhoneAlreadyInUseException.class)
+    public ResponseEntity<Map<String, Object>> handlePhoneInUse(PhoneAlreadyInUseException ex) {
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     // Helper method to build a consistent response structure
