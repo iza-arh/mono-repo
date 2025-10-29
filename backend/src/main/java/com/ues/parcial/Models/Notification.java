@@ -3,6 +3,10 @@ package com.ues.parcial.Models;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.ues.parcial.Models.Enums.NotificationChannel;
 
 import jakarta.persistence.Column;
@@ -33,8 +37,9 @@ public class Notification {
     @Column(name = "notification_channel", nullable = false)
     private NotificationChannel notificationChannel;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "JSONB")
-    private String payload;
+    private JsonNode payload;
 
     @Column(columnDefinition = "TEXT")
     private String status;
