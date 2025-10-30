@@ -9,6 +9,8 @@ import com.ues.parcial.Models.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long>{
     
+    public Optional<Category> findById(Long id);
+
     // Find category by code
     public Optional<Category> findByCode(String code);
 
