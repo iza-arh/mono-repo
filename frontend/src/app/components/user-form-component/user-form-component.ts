@@ -9,6 +9,7 @@ import { OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UserInterface } from '../../models/interface/user.interface';
 import { Select } from 'primeng/select';
+import { UserService } from '../../services/user-service';
 
 @Component({
   selector: 'app-user-form-component',
@@ -19,13 +20,13 @@ import { Select } from 'primeng/select';
 })
 export class UserFormComponent implements OnInit {
 
-  constructor(private root: ActivatedRoute) {
+  constructor(private root: ActivatedRoute, private userService: UserService) {
 
   }
 
   roles: string[] = ['CITIZEN', 'TECHNICIAN', 'MANAGER', 'ADMIN']
 
-  user: UserInterface = {
+  myUser: UserInterface = {
     id: null,
     email: 'rh23003@ues.edu.sv',
     name: 'Isai',
@@ -34,26 +35,20 @@ export class UserFormComponent implements OnInit {
     phone: ''
   }
 
-  clearForm(Form: NgForm) {
-    this.user.id = null;
-    this.user.name = '';
-    this.user.lastName = '';
-    this.user.role = '';
-    this.user.phone = '';
-    this.user.email = '';
-
-    Form.resetForm(this.user);
-  }
-
   updateUser(formValues: UserInterface, Form: NgForm) {
-    this.user.role = formValues.role;
-    this.user.phone = formValues.phone;
-    this.clearForm(Form)
+    this.myUser.role = formValues.role;
+    this.myUser.phone = formValues.phone;
+    this.userService.updateUserRole(this.myUser.id || "", this.myUser).subscribe(res => {
+    })
+    this.userService.updateUserPhoneNumber(this.myUser.id || "", this.myUser).subscribe(res => {
+    })
   }
 
   ngOnInit(): void {
     this.root.paramMap.subscribe((params) => {
-      console.log(params.get('id'))
+      this.userService.getUser(params.get('id') || "").subscribe(res => {
+        this.myUser = res;
+      })
     })
   }
 
