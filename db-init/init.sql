@@ -1,14 +1,7 @@
-/*
-  PASO 1: Activar la extensión PostGIS
-  (Soluciona: "type 'geography'/'geometry' does not exist")
-*/
+
 CREATE EXTENSION IF NOT EXISTS postgis;
 
 
-/*
-  PASO 2: Crear TODOS tus tipos ENUM
-  (Soluciona: "type 'user_role'/'report_state'/'severity_t' does not exist")
-*/
 CREATE TYPE user_role AS ENUM (
   'ADMIN', 'USER', 'TECHNICIAN'
 );
