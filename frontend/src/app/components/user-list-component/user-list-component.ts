@@ -3,6 +3,8 @@ import { UserInterface } from '../../models/interface/user.interface';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
+import { OnInit } from '@angular/core';
+import { UserService } from '../../services/user-service';
 
 @Component({
   selector: 'app-user-list-component',
@@ -11,38 +13,23 @@ import { RouterLink } from '@angular/router';
   templateUrl: './user-list-component.html',
   styleUrl: './user-list-component.css'
 })
-export class UserListComponent {
+export class UserListComponent implements OnInit {
 
-  users: UserInterface[] = [{
-    id: 1,
-    email: 'john.doe@example.com',
-    name: 'John',
-    lastName: 'Doe',
-    role: 'Admin',
-    phone: '+1-555-123-4567'
-  },
-  {
-    id: 2,
-    email: 'jane.smith@example.com',
-    name: 'Jane',
-    lastName: 'Smith',
-    role: 'Editor',
-    phone: '+1-555-987-6543'
-  },
-  {
-    id: 3,
-    email: 'michael.brown@example.com',
-    name: 'Michael',
-    lastName: 'Brown',
-    role: 'Viewer',
-    phone: '+1-555-222-3333'
+  constructor(private userService: UserService) {
+
   }
-  ];
+
+  users: UserInterface[] = [];
 
   deleteUser(id: number) {
     console.log(id)
   }
 
+  ngOnInit(): void {
+    this.userService.getUsers().subscribe(res => {
+      this.users = res;
+    })
+  }
 
 
 }
