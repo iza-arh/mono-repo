@@ -6,3 +6,7 @@ frontend/dist/
 backend/target/
 *.iml
 *.class
+
+#Ignorar las variables de entorno de .env
+.env
+
