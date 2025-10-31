@@ -14,6 +14,7 @@ import java.util.List;
 
 @Data
 public class GeometryDto {
-    private String type;
-    private List<List<List<Double>>> coordinates;
+    private String type; // "Point" or "Polygon"
+    private List<List<List<Double>>> coordinates; // for Polygon
+    private List<Double> point; // for Point: [lon, lat]
 }

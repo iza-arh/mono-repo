@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.ues.parcial.Models.ReportPhotos;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.ues.parcial.Models.ReportPhotos;
 
 public interface ReportPhotoRepository extends JpaRepository<ReportPhotos, UUID> {
 
@@ -19,7 +19,7 @@ public interface ReportPhotoRepository extends JpaRepository<ReportPhotos, UUID>
     List<ReportPhotos> findByReport_Id(UUID reportId);
 
     // *All photos uploaded by a specific user by user ID*
-    List<ReportPhotos> findByUploadedBy_Id(UUID userId);
+    List<ReportPhotos> findByUploadedBy_Id(String userId);
 
     // *All photos uploaded within a specific date range*
     List<ReportPhotos> findByUploadedAtBetween(OffsetDateTime start, OffsetDateTime end);
@@ -45,6 +45,6 @@ public interface ReportPhotoRepository extends JpaRepository<ReportPhotos, UUID>
     // *Delete all photos uploaded by a specific user by user ID (bulk delete)*
     @Modifying
     @Query("DELETE FROM ReportPhotos p WHERE p.uploadedBy.id = :userId")
-    void deleteByUploadedById(@Param("userId") UUID userId);
+    void deleteByUploadedById(@Param("userId") String userId);
 
 }
