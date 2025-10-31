@@ -1,24 +1,24 @@
 <div class="flex justify-content-center align-items-center h-screen">
-    <form #UserForm="ngForm" (ngSubmit)="updateUser(UserForm.value, UserForm)">
+    <form #UserForm="ngForm" (ngSubmit)="updateUser(UserForm.value, UserForm)" class="w-6">
         <p-card header="Edit user">
-            <div class="flex gap-3 mt-5">
+            <div class="flex gap-3 mt-5 justify-content-center">
                 <h2>Name</h2>
-                <p>{{user.name}}</p>
+                <p>{{myUser.name}}</p>
             </div>
-            <div class="flex gap-3 mt-5">
+            <div class="flex gap-3 mt-5 justify-content-center">
                 <h2>Last name</h2>
-                <p>{{user.lastName}}</p>
+                <p>{{myUser.lastName}}</p>
             </div>
-            <div class="flex gap-3 mt-5">
+            <div class="flex gap-3 mt-5 justify-content-center">
                 <h2>Email</h2>
-                <p>{{user.email}}</p>
+                <p>{{myUser.email}}</p>
             </div>
             <div class="flex justify-content-center mt-5">
-                <p-select [options]="roles" [(ngModel)]="user.role" placeholder="Select a Role" name="role" />
+                <p-select [options]="roles" [(ngModel)]="myUser.role" placeholder="Select a Role" name="role" />
             </div>
             <div class="flex flex-column justify-content-center align-items-center mt-5">
                 <p-floatlabel>
-                    <input pInputText id="phone" autocomplete="off" name="phone" [(ngModel)]="user.phone" required
+                    <input pInputText id="phone" autocomplete="off" name="phone" [(ngModel)]="myUser.phone" required
                         #phoneCtrl="ngModel" />
                     <label for="phone">Phone</label>
                 </p-floatlabel>
