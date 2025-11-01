@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ues.parcial.dtos.report.ReportRequestDto;
 import com.ues.parcial.dtos.report.ReportResponseDto;
 import com.ues.parcial.dtos.report.ReportUpdateDto;
+import com.ues.parcial.dtos.report.ReportUpdateStateDto;
 import com.ues.parcial.services.ReportService;
 
 import jakarta.validation.Valid;
@@ -42,6 +43,11 @@ public class ReportController {
         return ResponseEntity.ok(reportService.toResponseDto(reportService.updateReport(id, dto)));
     }
 
+    @PatchMapping("/{id}/state")
+    public ResponseEntity<?> updateReportState(@PathVariable UUID id, @Valid @RequestBody ReportUpdateStateDto dto) {
+        return ResponseEntity.ok(reportService.toResponseDto(reportService.updateReportState(id, dto)));
+    }
+
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<?> deactivate(@PathVariable UUID id) {
         reportService.softDeleteReport(id);
@@ -56,5 +62,10 @@ public class ReportController {
     @GetMapping
     public ResponseEntity<?> getActiveReports() {
         return ResponseEntity.ok(reportService.toResponseDtoList(reportService.getAllActiveReports()));
+    }
+
+    @GetMapping("/reporter/{reporterId}")
+    public ResponseEntity<?> getReportsByReporter(@PathVariable String reporterId) {
+        return ResponseEntity.ok(reportService.toResponseDtoList(reportService.getReportsByReporter(reporterId)));
     }
 }
