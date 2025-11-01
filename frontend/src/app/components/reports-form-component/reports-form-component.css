@@ -1,0 +1,14 @@
+.map-container {
+    position: relative;
+    height: 100vh;
+    /* or whatever height you want */
+    width: 100%;
+}
+
+.overlay-button {
+    position: absolute;
+    top: 20px;
+    /* distance from top */
+    z-index: 1000;
+    /* ensure it's above the map */
+}

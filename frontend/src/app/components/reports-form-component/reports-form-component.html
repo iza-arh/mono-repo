@@ -1,5 +1,5 @@
-<div class="card flex justify-content-center">
-    <p-card header="Create new report" class="mt-5 w-6">
+<div *ngIf="!isActive" class="card flex justify-content-center">
+    <p-card header="Create new report" class="mt-5 mb-5">
         <form #reportForm="ngForm" (ngSubmit)="createReport(reportForm.value, reportForm)">
             <div class="flex flex-column justify-content-center align-items-center mt-5">
                 <p-floatlabel>
@@ -21,26 +21,63 @@
                     Description is required!
                 </div>
             </div>
+            <div class="flex flex-column justify-content-center align-items-center mt-5">
+                <p-floatlabel>
+                    <textarea pTextarea id="directionInput" [(ngModel)]="report.locationText" rows="5" cols="30"
+                        style="resize: none" name="locationText" required #directionCtrl="ngModel"></textarea>
+                    <label for="directionInput">Direction</label>
+                </p-floatlabel>
+                <div *ngIf="directionCtrl.invalid && directionCtrl.touched" class="text-center red-text mt-1">
+                    Direction is required!
+                </div>
+            </div>
             <div class="flex justify-content-center mt-5 gap-3">
                 <p-select [options]="categories" [(ngModel)]="report.categoryId" [checkmark]="true" optionLabel="name"
                     name="categoryId" optionValue="id" [showClear]="true" placeholder="Select a category" />
                 <p-select [options]="zones" [(ngModel)]="report.zoneId" [checkmark]="true" optionLabel="name"
                     name="zoneId" optionValue="id" [showClear]="true" placeholder="Select a zone" />
             </div>
-
             <div class="flex justify-content-center mt-5 gap-3">
                 <p-select [options]="severity" [(ngModel)]="report.severity" [checkmark]="true" name="severity"
-                 [showClear]="true" placeholder="Select severity" />
+                    [showClear]="true" placeholder="Select severity" />
             </div>
-
-            <div class="card flex flex-wrap justify-content-center mt-5">
+            <div class="flex justify-content-center mt-5 gap-3">
+                <div>
+                    <label for="dateInput" class="font-bold block mb-2">Date</label>
+                    <p-datepicker [(ngModel)]="date" [showIcon]="true" inputId="dateInput" [showOnFocus]="false" name="date"/>
+                </div>
+                <div class="">
+                    <label for="timeInput" class="font-bold block mb-2"> Time </label>
+                    <p-datepicker [(ngModel)]="time" [iconDisplay]="'input'" [showIcon]="true" [timeOnly]="true"
+                        inputId="timeInput" name="time">
+                        <ng-template #inputicon let-clickCallBack="clickCallBack">
+                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+                        </ng-template>
+                    </p-datepicker>
+                </div>
+            </div>
+            <div class="card flex flex-wrap gap-5 justify-content-center mt-5">
                 <p-toast />
                 <p-fileupload #fu mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" accept="image/*"
                     name="photo" maxFileSize="1000000" (onSelect)="onFileSelect($event)" />
+                <p-button class="pi pi-map-marke" severity="info" (click)="showMap()">
+                    <i class="pi pi-map-marker"></i>
+                </p-button>
             </div>
             <div class="flex justify-content-center mt-5">
                 <p-button label="Submit" type="submit" severity="success" />
             </div>
         </form>
     </p-card>
+</div>
+
+<div *ngIf="isActive" class="map-container relative">
+    <div class="flex justify-content-center">
+        <p-button label="Complete" severity="success" class="overlay-button" (click)="showMap()"/>
+    </div>
+    <google-map class="map" height="100%" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"
+        (mapClick)="addPoint($event)">
+        <map-advanced-marker [position]="{ lat: point.lat, lng: point.lng }">
+        </map-advanced-marker>
+    </google-map>
 </div>
