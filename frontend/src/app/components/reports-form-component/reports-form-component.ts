@@ -5,7 +5,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Report } from '../../models/interface/report.interface';
+import { ReportInterface } from '../../models/interface/report.interface';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { CommonModule } from '@angular/common';
@@ -16,10 +16,14 @@ import { OnInit } from '@angular/core';
 import { Select } from 'primeng/select';
 import { Zone } from '../../models/interface/zone.interface';
 import { ZoneService } from '../../services/zone-service';
+import { GoogleMap, MapAdvancedMarker } from '@angular/google-maps';
+import { HttpClient } from '@angular/common/http';
+import { DatePickerModule } from 'primeng/datepicker';
+import { ReportService } from '../../services/report-service';
 
 @Component({
   selector: 'app-reports-form-component',
-  imports: [CommonModule, CardModule, FileUpload, ToastModule, ButtonModule, FormsModule, FloatLabel, InputTextModule, TextareaModule, Select],
+  imports: [CommonModule, CardModule, FileUpload, ToastModule, ButtonModule, FormsModule, FloatLabel, InputTextModule, TextareaModule, Select, GoogleMap, MapAdvancedMarker, DatePickerModule],
   standalone: true,
   templateUrl: './reports-form-component.html',
   styleUrl: './reports-form-component.css',
@@ -28,23 +32,30 @@ import { ZoneService } from '../../services/zone-service';
 export class ReportsFormComponent implements OnInit {
 
 
-  constructor(private categoryService: CategoryService, private zoneService: ZoneService) {
+  constructor(private categoryService: CategoryService, private zoneService: ZoneService, private http: HttpClient, private reportService: ReportService) {
 
   }
 
-  report: Report = {
+  report: ReportInterface = {
     id: '',
     title: '',
     description: '',
     categoryId: '',
     zoneId: '',
     severity: '',
-    UserId: '',
+    reporterId: '12345',
     state: '',
     priority: null,
     occurredAt: null,
-    locationText: ''
+    locationText: '',
+    geom: {
+      type: "Point",
+      point: []
+    }
   }
+
+  date!: Date;
+  time!: Date;
 
   categories: Category[] = [];
 
@@ -59,6 +70,46 @@ export class ReportsFormComponent implements OnInit {
   @ViewChild('fu') fileUpload!: FileUpload;
   selectedFile: File | null = null;;
 
+  center: google.maps.LatLngLiteral = { lat: 13.7942, lng: -88.8965 };
+  point: google.maps.LatLngLiteral = { lat: 0, lng: 0 };
+
+
+  zoom = 7;
+  mapOptions: google.maps.MapOptions = {
+    mapId: 'c23b55e40f719ab3b1055631'
+  };
+
+  isActive: boolean = false;
+
+  showMap(){
+    this.isActive = !this.isActive;
+  }
+
+
+
+  obtenerUbicacion() {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.point.lat = position.coords.latitude;
+          this.point.lng = position.coords.longitude;
+        },
+        (error) => {
+          console.error('Error al obtener la ubicación:', error.message);
+        }
+      );
+    } else {
+      console.error('Geolocalización no soportada en este navegador.');
+    }
+  }
+
+  addPoint(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.point = event.latLng.toJSON()
+      this.report.geom.point[0] = this.point.lat
+      this.report.geom.point[1] = this.point.lng
+    }
+  }
 
   onFileSelect(event: any) {
     if (event.files && event.files.length > 0) {
@@ -66,14 +117,26 @@ export class ReportsFormComponent implements OnInit {
     }
   }
 
+  formattedDate() {
+    if (!this.date) return '';
+    const year = this.date.getFullYear();
+    const month = String(this.date.getMonth() + 1).padStart(2, '0');
+    const day = String(this.date.getDate()).padStart(2, '0');
+    const hour = String(this.time.getHours()).padStart(2, '0');
+    const minutes = String(this.time.getMinutes()).padStart(2, '0');
+    const seconds = String(this.time.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}Z`;
+  }
+
+
   clearForm(form: NgForm) {
-    this.report.id = '';
+    this.report.id = null;
     this.report.title = '';
     this.report.description = '';
     this.report.categoryId = '';
     this.report.zoneId = '';
     this.report.severity = '';
-    this.report.UserId = '';
+    this.report.reporterId = '';
     this.report.state = '';
     this.report.priority = null;
     this.report.occurredAt = null;
@@ -86,19 +149,27 @@ export class ReportsFormComponent implements OnInit {
     }
   }
 
-  createReport(formValue: Report, form: NgForm) {
-    const now = new Date();
+  createReport(formValue: ReportInterface, form: NgForm) {
     const formData = new FormData();
-    this.report.occurredAt = now;
     if (this.selectedFile) {
       formData.append('photo', this.selectedFile);
     }
     Object.entries(formValue).forEach(([key, value]) => {
       formData.append(key, value);
     });
-    this.clearForm(form)
+    this.report.title = formValue.title;
+    this.report.description = formValue.description;
+    this.report.categoryId = formValue.categoryId;
+    this.report.zoneId = formValue.zoneId;
+    this.report.severity = formValue.severity;
+    this.report.priority = formValue.priority;
+    this.report.occurredAt = formValue.occurredAt;
+    this.report.locationText = formValue.locationText;
+    this.report.occurredAt = this.formattedDate();
+    this.reportService.createReport(this.report).subscribe(res => {
+      console.log(res)
+    })
   }
-
 
   ngOnInit(): void {
     this.categoryService.getCategories().subscribe((res) => {
@@ -108,5 +179,6 @@ export class ReportsFormComponent implements OnInit {
       this.zones = res;
       console.log(this.zones)
     })
+    this.obtenerUbicacion()
   }
 }
