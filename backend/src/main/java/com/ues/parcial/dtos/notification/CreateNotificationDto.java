@@ -25,4 +25,6 @@ public class CreateNotificationDto {
 
     @NotNull(message = "payload is required")
     private Map<String, Object> payload;
+
+    private boolean sendNotification = false; // This flag indicates whether the notification should be sent or not.
 }
