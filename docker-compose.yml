@@ -1,6 +1,6 @@
 services:
   db:
-    # 1. ESTA ES LA IMAGEN CORRECTA
+    
     image: postgis/postgis:16-3.4
     container_name: urbanofix-db
     environment:
@@ -11,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-      # 2. ESTA LÍNEA ES VITAL
+      
       - ./db-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U neondb_owner -d urbanofix_db"]
@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
 
   backend:
-    # ... (Tu backend se queda igual, está bien)
+  
     build:
       context: ./backend
       dockerfile: Dockerfile
