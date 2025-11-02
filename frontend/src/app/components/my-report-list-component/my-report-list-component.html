@@ -1,4 +1,4 @@
-<div class="card">
+<div *ngIf="!isActiveMap" class="card">
     <p-table [value]="reports">
         <ng-template pTemplate="header">
             <tr>
@@ -21,26 +21,26 @@
                     {{report.severity}}
                 </td>
                 <td>
-                    <p-button class="pi pi-map-marke" severity="info">
+                    <p-button class="pi pi-map-marke" severity="info" (click)="showMap(report.geom.point)">
                         <i class="pi pi-map-marker"></i>
                     </p-button>
                 </td>
                 <td>
-                    <p-button label="See complete" severity="help" class="mr-3"/>
-                    <p-button label="Edit" severity="info" class="mr-3"/>
-                    <p-button label="Delete" severity="danger" class="mr-3"/>
+                    <p-button label="See complete" severity="help" class="mr-3" />
+                    <p-button label="Edit" severity="info" class="mr-3" />
+                    <p-button label="Delete" severity="danger" class="mr-3" />
                 </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
 
-<div class="map-container relative">
+<div *ngIf="isActiveMap" class="map-container relative">
     <div class="flex justify-content-center">
-        <p-button label="Complete" severity="success" class="overlay-button" />
+        <p-button label="Complete" severity="success" class="overlay-button" (click)="hideMap()" />
     </div>
     <google-map class="map" height="100%" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
-        <map-advanced-marker>
+        <map-advanced-marker [position]="{ lat: point.lat, lng: point.lng }">
         </map-advanced-marker>
     </google-map>
 </div>
