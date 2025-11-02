@@ -6,7 +6,7 @@
                 <th>State</th>
                 <th>Severity</th>
                 <th>location</th>
-                <th class="flex justify-content-center">Options</th>
+                <th>Options</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-report>
@@ -28,8 +28,6 @@
                 <td>
                     <p-button label="See complete" severity="help" class="mr-3"
                         (click)="showCompleteReport(report.id)" />
-                    <p-button label="Edit" severity="info" class="mr-3" />
-                    <p-button label="Delete" severity="danger" class="mr-3" />
                 </td>
             </tr>
         </ng-template>
