@@ -1,0 +1,79 @@
+<div *ngIf="!isActiveWholedata && !isActiveMap" class="card">
+    <p-table [value]="reports">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Title</th>
+                <th>State</th>
+                <th>Severity</th>
+                <th>location</th>
+                <th>Options</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-report>
+            <tr>
+                <td>
+                    {{report.title}}
+                </td>
+                <td>
+                    {{report.state}}
+                </td>
+                <td>
+                    {{report.severity}}
+                </td>
+                <td>
+                    <p-button class="pi pi-map-marke" severity="info" (click)="showMap(report.geom.point)">
+                        <i class="pi pi-map-marker"></i>
+                    </p-button>
+                </td>
+                <td>
+                    <p-button label="See complete" severity="help" class="mr-3"
+                        (click)="showCompleteReport(report.id)" />
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<div *ngIf="isActiveWholedata && !isActiveMap" class="card flex justify-content-center">
+    <p-card header="Title: {{report.title}}" class="mt-5 mb-5 mx-5">
+        <div class="flex gap-3 mt-5">
+            <h2>State:</h2>
+            <p>{{report.state}}</p>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <h2>Severity:</h2>
+            <p>{{report.severity}}</p>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <h2>Date & Time occured:</h2>
+            <p>{{report.occurredAt}}</p>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <h2>Location:</h2>
+            <p-button class="pi pi-map-marke" severity="info" (click)="showMap(report.geom.point)">
+                <i class="pi pi-map-marker"></i>
+            </p-button>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <h2>Description:</h2>
+            <p>{{report.description}}</p>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <h2>Direction:</h2>
+            <p>{{report.locationText}}</p>
+        </div>
+        <div class="flex justify-content-center mt-5">
+            <p-button label="Complete" severity="success" (click)="hideCompleteReport()" />
+        </div>
+    </p-card>
+</div>
+
+<div *ngIf="isActiveMap" class="map-container relative">
+    <div class="flex justify-content-center">
+        <p-button label="Complete" severity="success" class="overlay-button" (click)="hideMap()" />
+    </div>
+    <google-map class="map" height="100%" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
+        <map-advanced-marker [position]="{ lat: point.lat, lng: point.lng }">
+        </map-advanced-marker>
+    </google-map>
+</div>

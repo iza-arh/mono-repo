@@ -24,7 +24,9 @@ export class CustomSidenav {
     { path: '/zone-form', icon: 'description', label: 'add zone' },
     { path: '/zone-list', icon: 'view_list', label: 'show zones' },
     { path: '/user-list', icon: 'view_list', label: 'show users' },
-    { path: '/report-form', icon: 'description', label: 'add reports' }
+    { path: '/report-form', icon: 'description', label: 'add reports' },
+    { path: '/report-list', icon: 'view_list', label: 'show reports' }
+
 
   ]);
 
