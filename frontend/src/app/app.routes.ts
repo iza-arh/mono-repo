@@ -7,6 +7,7 @@ import { UserListComponent } from './components/user-list-component/user-list-co
 import { UserFormComponent } from './components/user-form-component/user-form-component';
 import { ReportsFormComponent } from './components/reports-form-component/reports-form-component';
 import { ReportListComponent } from './components/report-list-component/report-list-component';
+import { MyReportListComponent } from './components/my-report-list-component/my-report-list-component';
 
 export const routes: Routes = [
     {
@@ -52,6 +53,11 @@ export const routes: Routes = [
     {
         path: 'report-list',
         component: ReportListComponent
+    },
+    {
+        path: 'my-report-list',
+        component: MyReportListComponent
     }
+
 
 ];
