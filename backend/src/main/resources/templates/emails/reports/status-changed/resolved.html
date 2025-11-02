@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${emailTitle}">Report Resolved! - UrbanoFix</title>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f4f4f4;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: #ffffff; 
+            border-radius: 8px; 
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header { 
+            background: #2c5aa0; 
+            color: white; 
+            padding: 20px; 
+            text-align: center;
+        }
+        .header h1 { 
+            margin: 0; 
+            font-size: 24px;
+        }
+        .content { 
+            padding: 30px; 
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .report-details {
+            background: #f8f9fa;
+            border-left: 4px solid #2c5aa0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .button {
+            display: inline-block;
+            background: #2c5aa0;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer { 
+            text-align: center; 
+            margin-top: 30px; 
+            font-size: 0.9em; 
+            color: #666;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .reason-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 th:text="${emailTitle}">UrbanoFix</h1>
+        </div>
+        
+        <div class="content">
+            <h2>🎉 Issue Resolved!</h2>
+            
+            <p>Hola <strong th:text="${userName}">Usuario</strong>,</p>
+            
+            <p>Great news! The issue you reported has been <strong>successfully resolved.</p>
+            
+            <div class="report-details">
+                <p><strong>Report ID:</strong> <span th:text="${reportId}">N/A</span></p>
+                <p><strong>Title:</strong> <span th:text="${reportTitle}">Report Title</span></p>
+                <p><strong>Resolution Date:</strong> <span th:text="${changeDate}">Date</span></p>
+            </div>
+
+            <div th:if="${changeReason}" class="reason-box">
+                <p><strong>Resolution Details:</strong></p>
+                <p th:text="${changeReason}">Resolution Details</p>
+            </div>
+
+            <div class="status-badge" style="background: #20c997;">
+                CURRENT STATUS: RESOLVED
+            </div>
+
+            <p>
+                <a th:href="${viewReportLink}" class="button">View Completed Report</a>
+            </p>
+
+            <p>Thank you for helping us improve our city!</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 - UrbanoFix Notification System.</p>
+            <p>This is an automated message, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>

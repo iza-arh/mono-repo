@@ -36,9 +36,15 @@ public class GlobalExceptionHandler  {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    // When a phone number format is invalid
     @ExceptionHandler(InvalidPhoneFormatException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidPhone(InvalidPhoneFormatException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(NotificationSendException.class)
+    public ResponseEntity<Map<String, Object>> handleNotificationException(NotificationSendException ex) {
+        return buildResponse(HttpStatus.BAD_GATEWAY, ex.getMessage());
     }
 
     // When validation on an argument annotated with @Valid fails (for example @NotNull, @Size, etc.)

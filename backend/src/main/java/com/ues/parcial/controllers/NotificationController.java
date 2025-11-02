@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ues.parcial.Models.Enums.NotificationChannel;
+import com.ues.parcial.dtos.notification.CreateMultiNotificationsDto;
 import com.ues.parcial.dtos.notification.CreateNotificationDto;
 import com.ues.parcial.dtos.notification.UpdateNotificationStatusDto;
 import com.ues.parcial.services.NotificationService;
@@ -35,6 +36,11 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<?> createNotification(@Valid @RequestBody CreateNotificationDto dto) {
         return ResponseEntity.ok(notificationService.toResponseDto(notificationService.createNotification(dto)));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<?> sendBulkNotifications(@Valid @RequestBody CreateMultiNotificationsDto dto) {
+        return ResponseEntity.ok(notificationService.createAndSendNotifications(dto));
     }
 
     @PatchMapping("/{id}/status")

@@ -5,17 +5,20 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import com.ues.parcial.Models.Category;
 import com.ues.parcial.Models.Report;
 import com.ues.parcial.Models.User;
 import com.ues.parcial.Models.Zone;
+import com.ues.parcial.Models.Enums.ReportState;
 import com.ues.parcial.Models.Enums.Severity;
 import com.ues.parcial.dtos.category.CategorySimpleDto;
 import com.ues.parcial.dtos.report.ReportRequestDto;
 import com.ues.parcial.dtos.report.ReportResponseDto;
 import com.ues.parcial.dtos.report.ReportUpdateDto;
+import com.ues.parcial.dtos.report.ReportUpdateStateDto;
 import com.ues.parcial.dtos.user.UserSimpleDto;
 import com.ues.parcial.dtos.zone.GeometryDto;
 import com.ues.parcial.dtos.zone.ZoneSimpleDto;
@@ -24,6 +27,7 @@ import com.ues.parcial.repositories.CategoryRepository;
 import com.ues.parcial.repositories.ReportRepository;
 import com.ues.parcial.repositories.UserRepository;
 import com.ues.parcial.repositories.ZoneRepository;
+import com.ues.parcial.services.events.ReportStatusChangedEvent;
 import com.ues.parcial.utils.GeometryUtils;
 
 import jakarta.persistence.EntityManager;
@@ -39,14 +43,16 @@ public class ReportService {
     private final CategoryRepository categoryRepository;
     private final ZoneRepository zoneRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
     @PersistenceContext
     private EntityManager entityManager;
 
-    public ReportService(ReportRepository reportRepository, CategoryRepository categoryRepository, ZoneRepository zoneRepository, UserRepository userRepository) {
+    public ReportService(ReportRepository reportRepository, CategoryRepository categoryRepository, ZoneRepository zoneRepository, UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
         this.reportRepository = reportRepository;
         this.categoryRepository = categoryRepository;
         this.zoneRepository = zoneRepository;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     // Create a new report
@@ -90,7 +96,13 @@ public class ReportService {
             throw new IllegalArgumentException("Location (geom) is required");
         }
 
-        return reportRepository.save(r);
+        Report savedReport = reportRepository.save(r);
+
+        // Publish event for new report creation.
+        eventPublisher.publishEvent(new ReportStatusChangedEvent(
+            this, savedReport, null, savedReport.getState(), "New report created"));
+
+        return savedReport;
     }
 
     // Update an existing report
@@ -98,6 +110,8 @@ public class ReportService {
     public Report updateReport(UUID id, ReportUpdateDto dto) {
         Report r = reportRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Report not found"));
+
+        ReportState oldState = r.getState();
 
         if (dto.getTitle() != null)
             r.setTitle(dto.getTitle().trim());
@@ -146,7 +160,37 @@ public class ReportService {
             }
         }
 
-        return reportRepository.save(r);
+        Report updatedReport = reportRepository.save(r);
+
+        // Only publish event if state changed
+        if (dto.getState() != null && !dto.getState().equals(oldState)) {
+            eventPublisher.publishEvent(new ReportStatusChangedEvent(
+                this, updatedReport, oldState, dto.getState(), ""));
+        }
+
+        return updatedReport;
+    }
+
+    @Transactional
+    public Report updateReportState(UUID reportId, ReportUpdateStateDto dto) {
+        Report report = reportRepository.findById(reportId)
+            .orElseThrow(() -> new ResourceNotFoundException("Report not found"));
+        
+        ReportState oldState = report.getState();
+        
+        // Only update if the new state is different
+        if (!dto.getNewState().equals(oldState)) {
+            report.setState(dto.getNewState());
+            Report updatedReport = reportRepository.save(report);
+            
+            // Publish event for state change
+            eventPublisher.publishEvent(new ReportStatusChangedEvent(
+                this, updatedReport, oldState, dto.getNewState(), dto.getChangeReason()));
+            
+            return updatedReport;
+        }
+        
+        return report;
     }
 
     // Soft delete a report by setting its isActive field to false
@@ -171,6 +215,14 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<Report> getAllActiveReports() {
         return reportRepository.findByIsActiveTrue();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Report> getReportsByReporter(String reporterId) {
+        User reporter = userRepository.findById(reporterId)
+            .orElseThrow(() -> new ResourceNotFoundException("Reporter not found"));
+
+        return reportRepository.findByReporter(reporter);
     }
     
     // Converts Report entity to ReportResponseDto
