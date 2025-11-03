@@ -8,11 +8,11 @@ import { ReportService } from '../../services/report-service';
 import { OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { CardModule } from 'primeng/card';
-
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-my-report-list-component',
-  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule, CardModule],
+  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule, CardModule, RouterLink],
   standalone: true,
   templateUrl: './my-report-list-component.html',
   styleUrl: './my-report-list-component.css'
@@ -103,10 +103,7 @@ export class MyReportListComponent implements OnInit {
     this.isActiveWholedata = false;
   }
 
-
-
   ngOnInit(): void {
-
     this.auth.user$.subscribe(user => {
       this.reportService.getUserReports(user?.sub || '').subscribe(res => {
         this.reports = res;
