@@ -7,11 +7,12 @@ import { CommonModule } from '@angular/common';
 import { ReportService } from '../../services/report-service';
 import { OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
+import { CardModule } from 'primeng/card';
 
 
 @Component({
   selector: 'app-my-report-list-component',
-  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule],
+  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule, CardModule],
   standalone: true,
   templateUrl: './my-report-list-component.html',
   styleUrl: './my-report-list-component.css'
@@ -19,6 +20,36 @@ import { AuthService } from '@auth0/auth0-angular';
 export class MyReportListComponent implements OnInit {
 
   constructor(private reportService: ReportService, private auth: AuthService) {
+  }
+
+  report: GetReport = {
+    id: "",
+    title: "",
+    description: "",
+    categoryId: {
+      id: null,
+      name: ""
+    },
+    zoneId: {
+      id: "",
+      name: ""
+    },
+    reporter: {
+      name: "",
+      lastName: ""
+    },
+    state: "",
+    severity: "",
+    priority: null,
+    occurredAt: "",
+    createdAt: "",
+    updatedAt: "",
+    geom: {
+      type: "Point",
+      coordinates: null,
+      point: []
+    },
+    locationText: ""
   }
 
 
@@ -46,6 +77,33 @@ export class MyReportListComponent implements OnInit {
   hideMap() {
     this.isActiveMap = false;
   }
+
+  formatDate(occurredAt: string | "") {
+    if (!occurredAt) return;
+
+    const date = new Date(occurredAt);
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const hour = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+
+    this.report.occurredAt = `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`;
+  }
+
+  showCompleteReport(reportId: string) {
+    this.isActiveWholedata = true;
+    this.report = this.reports.find(report => report.id === reportId) || this.report;
+    this.formatDate(this.report.occurredAt || '');
+  }
+
+  hideCompleteReport() {
+    this.isActiveWholedata = false;
+  }
+
+
 
   ngOnInit(): void {
 
