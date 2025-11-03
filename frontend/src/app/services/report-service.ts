@@ -18,4 +18,10 @@ export class ReportService {
     return this.http.get<GetReport[]>('http://localhost:8080/api/reports');
   }
 
+  getUserReports(userId: string){
+    const encodedUserId = encodeURIComponent(userId);
+    const url = `http://localhost:8080/api/reports/reporter/${encodedUserId}`;
+        return this.http.get<GetReport[]>(url);
+  }
+
 }

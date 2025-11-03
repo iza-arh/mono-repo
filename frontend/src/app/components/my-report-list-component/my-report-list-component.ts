@@ -4,114 +4,56 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { GoogleMap, MapAdvancedMarker } from '@angular/google-maps';
 import { CommonModule } from '@angular/common';
+import { ReportService } from '../../services/report-service';
+import { OnInit } from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
+import { CardModule } from 'primeng/card';
+
 
 @Component({
   selector: 'app-my-report-list-component',
-  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule],
+  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule, CardModule],
   standalone: true,
   templateUrl: './my-report-list-component.html',
   styleUrl: './my-report-list-component.css'
 })
-export class MyReportListComponent {
+export class MyReportListComponent implements OnInit {
 
-  reports: GetReport[] = [
-    {
-      id: "dc836173-f488-4127-9288-866d52570ca6",
-      title: "juan",
-      description: "es juan bro ",
-      categoryId: {
-        id: 11,
-        name: "Postes"
-      },
-      zoneId: {
-        id: "7c11fbfc-bccd-46c3-93f4-736710d53a0e",
-        name: "Zone 1"
-      },
-      reporter: {
-        name: "Isai",
-        lastName: "Hidalgo"
-      },
-      state: "REPORTED",
-      severity: "HIGH",
-      priority: 0,
-      occurredAt: "2025-11-30T19:08:00Z",
-      createdAt: "2025-11-02T02:08:50.124488Z",
-      updatedAt: "2025-11-02T02:08:50.124488Z",
-      geom: {
-        type: "Point",
-        coordinates: null,
-        point: [
-          -88.37001906788198,
-          13.64406015594588
-        ]
-      },
-      locationText: "por donde juan"
+  constructor(private reportService: ReportService, private auth: AuthService) {
+  }
+
+  report: GetReport = {
+    id: "",
+    title: "",
+    description: "",
+    categoryId: {
+      id: null,
+      name: ""
     },
-    {
-      id: "2d2352a2-fd51-48ab-9035-88e1143fac68",
-      title: "juan",
-      description: "es juan bro ",
-      categoryId: {
-        id: 11,
-        name: "Postes"
-      },
-      zoneId: {
-        id: "7c11fbfc-bccd-46c3-93f4-736710d53a0e",
-        name: "Zone 1"
-      },
-      reporter: {
-        name: "Isai",
-        lastName: "Hidalgo"
-      },
-      state: "REPORTED",
-      severity: "HIGH",
-      priority: 0,
-      occurredAt: "2025-11-30T19:08:00Z",
-      createdAt: "2025-11-02T02:09:50.399703Z",
-      updatedAt: "2025-11-02T02:09:50.399703Z",
-      geom: {
-        type: "Point",
-        coordinates: null,
-        point: [
-          -88.37001906788198,
-          13.64406015594588
-        ]
-      },
-      locationText: "por donde juan"
+    zoneId: {
+      id: "",
+      name: ""
     },
-    {
-      id: "5619f6df-bac1-406c-bef3-8aca1a6d4f54",
-      title: "se me pincho una llanta",
-      description: "se me pincho una llanta mi bro",
-      categoryId: {
-        id: 3,
-        name: "Llanta"
-      },
-      "zoneId": {
-        id: "5233ce26-7ca0-4ac9-b266-1c59456cc051",
-        name: "Zone 9"
-      },
-      "reporter": {
-        name: "Isai",
-        lastName: "Hidalgo"
-      },
-      state: "REPORTED",
-      severity: "LOW",
-      priority: 0,
-      occurredAt: "2025-11-30T19:11:00Z",
-      createdAt: "2025-11-02T02:11:20.634521Z",
-      updatedAt: "2025-11-02T02:11:20.634521Z",
-      geom: {
-        type: "Point",
-        coordinates: null,
-        point: [
-          -89.33421238644289,
-          14.107986009231318
-        ]
-      },
-      locationText: "por donde la nina rina"
-    }
-  ]
+    reporter: {
+      name: "",
+      lastName: ""
+    },
+    state: "",
+    severity: "",
+    priority: null,
+    occurredAt: "",
+    createdAt: "",
+    updatedAt: "",
+    geom: {
+      type: "Point",
+      coordinates: null,
+      point: []
+    },
+    locationText: ""
+  }
+
+
+  reports: GetReport[] = []
 
   isActiveMap: boolean = false;
 
@@ -134,6 +76,42 @@ export class MyReportListComponent {
 
   hideMap() {
     this.isActiveMap = false;
+  }
+
+  formatDate(occurredAt: string | "") {
+    if (!occurredAt) return;
+
+    const date = new Date(occurredAt);
+
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const hour = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+
+    this.report.occurredAt = `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`;
+  }
+
+  showCompleteReport(reportId: string) {
+    this.isActiveWholedata = true;
+    this.report = this.reports.find(report => report.id === reportId) || this.report;
+    this.formatDate(this.report.occurredAt || '');
+  }
+
+  hideCompleteReport() {
+    this.isActiveWholedata = false;
+  }
+
+
+
+  ngOnInit(): void {
+
+    this.auth.user$.subscribe(user => {
+      this.reportService.getUserReports(user?.sub || '').subscribe(res => {
+        this.reports = res;
+      })
+    })
   }
 
 }
