@@ -1,0 +1,21 @@
+.flex {
+  display: flex;
+}
+.items-center {
+  align-items: center;
+}
+.space-x-2 > * + * {
+  margin-left: 0.5rem;
+}
+.space-x-3 > * + * {
+  margin-left: 0.75rem;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.rounded-full {
+  border-radius: 9999px;
+}
+.border {
+  border: 1px solid #ccc;
+}
