@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+img {
+  border-radius: 1rem;
+}
+
+p {
+  line-height: 1.6;
+}

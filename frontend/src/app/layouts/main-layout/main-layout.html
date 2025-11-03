@@ -1,0 +1,17 @@
+<mat-sidenav-container class="h-screen">
+  <mat-sidenav
+    opened
+    mode="side"
+    class="!bg-black/5 rounded-none border-gray-200"
+    [style.width.px]="width()"
+  >
+    <app-custom-sidenav [collapsed]="collapsed()"></app-custom-sidenav>
+  </mat-sidenav>
+
+  <mat-sidenav-content [style.margin-left.px]="width()">
+    <app-header (onToggle)="collapsed.set(!collapsed())"></app-header>
+
+    <!-- Aquí se renderizarán tus vistas -->
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
