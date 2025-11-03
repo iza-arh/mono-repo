@@ -29,8 +29,16 @@ export const routes: Routes = [
         component: MainLayout,
         canActivate: [AuthGuard],
         children:[
-            //Only 'Administrador' can access these routes.
-
+            //Only 'Administrador' can access these routes. 
+            { path: 'category-form', component:CategoriesFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] } },
+            { path: 'category-form/:id', component: CategoriesFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] } },
+            { path: 'category-list', component: CategoryListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] } },
+            { path: 'zone-form', component: ZoneFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] } },
+            { path: 'zone-form/:id', component: ZoneFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] } },
+            { path: 'zone-list', component: ZoneListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] } },
+            { path: 'user-list', component: UserListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] }},
+            { path: 'user-form/:id', component: UserFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] }}, 
+            { path: 'user-form', component: UserFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador'] }},
             //Only 'Técnico' role can access these routes.
 
             //Only 'Encargado municipal' role can access these routes.
@@ -39,49 +47,10 @@ export const routes: Routes = [
 
             //All roles have access to these routes.
             { path: 'home', component: HomeComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
-            { path: 'category-form', component:CategoriesFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
-            { path: 'category-form/:id', component: CategoriesFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
-            { path: 'category-list', component: CategoryListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
-            { path: 'zone-form', component: ZoneFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
-            { path: 'zone-form/:id', component: ZoneFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
-            { path: 'zone-list', component: ZoneListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal'] } },
+            { path: 'report-form', component: ReportsFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] }},
+            { path: 'report-list', component: ReportListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] }},
         ],
     },
-    {
-        path: 'category-list',
-        component: CategoryListComponent
-    },
-    {
-        path: 'zone-form',
-        component: ZoneFormComponent
-    },
-    {
-        path: 'zone-list',
-        component: ZoneListComponent
-    },
-    {
-        path: 'zone-form/:id',
-        component: ZoneFormComponent
-    },
-    {
-        path: 'user-list',
-        component: UserListComponent
-    },
-    {
-        path: 'user-form/:id',
-        component: UserFormComponent
-    }, 
-    {
-        path: 'user-form',
-        component: UserFormComponent
-    },
-    {
-        path: 'report-form',
-        component: ReportsFormComponent
-    },
-    {
-        path: 'report-list',
-        component: ReportListComponent
-    }
+
 
 ];
