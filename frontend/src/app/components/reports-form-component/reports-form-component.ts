@@ -184,7 +184,11 @@ export class ReportsFormComponent implements OnInit {
       this.report.reporterId = user?.sub || '';
     })
     this.obtenerUbicacion(),
-    this.route.paramMap.subscribe(param =>{
-    })
+      this.route.paramMap.subscribe(param => {
+        if (param.get('id') !== null) {
+          this.reportService.getReport(param.get('id') || "").subscribe(res => {
+          });
+        }
+      })
   }
 }
