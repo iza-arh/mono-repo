@@ -20,6 +20,8 @@ import { GoogleMap, MapAdvancedMarker } from '@angular/google-maps';
 import { HttpClient } from '@angular/common/http';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ReportService } from '../../services/report-service';
+import { AuthService } from '@auth0/auth0-angular';
+
 
 @Component({
   selector: 'app-reports-form-component',
@@ -32,7 +34,7 @@ import { ReportService } from '../../services/report-service';
 export class ReportsFormComponent implements OnInit {
 
 
-  constructor(private categoryService: CategoryService, private zoneService: ZoneService, private http: HttpClient, private reportService: ReportService) {
+  constructor(private categoryService: CategoryService, private zoneService: ZoneService, private http: HttpClient, private reportService: ReportService, private auth: AuthService) {
 
   }
 
@@ -43,7 +45,7 @@ export class ReportsFormComponent implements OnInit {
     categoryId: '',
     zoneId: '',
     severity: '',
-    reporterId: '12345',
+    reporterId: '',
     state: '',
     priority: null,
     occurredAt: null,
@@ -81,7 +83,7 @@ export class ReportsFormComponent implements OnInit {
 
   isActive: boolean = false;
 
-  showMap(){
+  showMap() {
     this.isActive = !this.isActive;
   }
 
@@ -106,8 +108,8 @@ export class ReportsFormComponent implements OnInit {
   addPoint(event: google.maps.MapMouseEvent) {
     if (event.latLng) {
       this.point = event.latLng.toJSON()
-      this.report.geom.point[0] = this.point.lat
-      this.report.geom.point[1] = this.point.lng
+      this.report.geom.point[0] = this.point.lng
+      this.report.geom.point[1] = this.point.lat
     }
   }
 
@@ -154,9 +156,6 @@ export class ReportsFormComponent implements OnInit {
     if (this.selectedFile) {
       formData.append('photo', this.selectedFile);
     }
-    Object.entries(formValue).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
     this.report.title = formValue.title;
     this.report.description = formValue.description;
     this.report.categoryId = formValue.categoryId;
@@ -166,9 +165,11 @@ export class ReportsFormComponent implements OnInit {
     this.report.occurredAt = formValue.occurredAt;
     this.report.locationText = formValue.locationText;
     this.report.occurredAt = this.formattedDate();
-    this.reportService.createReport(this.report).subscribe(res => {
-      console.log(res)
-    })
+    if (this.report.reporterId !== null && this.report.reporterId !== '') {
+      this.reportService.createReport(this.report).subscribe(res => {
+        this.clearForm(form);
+      })
+    }
   }
 
   ngOnInit(): void {
@@ -177,7 +178,9 @@ export class ReportsFormComponent implements OnInit {
     })
     this.zoneService.getZones().subscribe((res) => {
       this.zones = res;
-      console.log(this.zones)
+    })
+    this.auth.user$.subscribe(user => {
+      this.report.reporterId = user?.sub || '';
     })
     this.obtenerUbicacion()
   }
