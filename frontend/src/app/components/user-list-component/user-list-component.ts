@@ -30,6 +30,4 @@ export class UserListComponent implements OnInit {
       this.users = res;
     })
   }
-
-
 }
