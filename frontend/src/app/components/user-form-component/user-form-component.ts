@@ -28,20 +28,23 @@ export class UserFormComponent implements OnInit {
 
   myUser: UserInterface = {
     id: null,
-    email: 'rh23003@ues.edu.sv',
-    name: 'Isai',
-    lastName: 'Alberto',
+    email: '',
+    name: '',
+    lastName: '',
     role: '',
-    phone: ''
+    phone: null
   }
 
   updateUser(formValues: UserInterface, Form: NgForm) {
+    console.log(formValues)
     this.myUser.role = formValues.role;
     this.myUser.phone = formValues.phone;
     this.userService.updateUserRole(this.myUser.id || "", this.myUser).subscribe(res => {
     })
-    this.userService.updateUserPhoneNumber(this.myUser.id || "", this.myUser).subscribe(res => {
-    })
+    if (formValues.phone) {
+      this.userService.updateUserPhoneNumber(this.myUser.id || "", this.myUser).subscribe(res => {
+      })
+    }
   }
 
   ngOnInit(): void {
