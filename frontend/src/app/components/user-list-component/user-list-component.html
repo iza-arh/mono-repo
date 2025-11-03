@@ -7,6 +7,7 @@
                 <th>last Name</th>
                 <th>Role</th>
                 <th>Phone number</th>
+                <th>Options</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-user>
@@ -28,7 +29,6 @@
                 </td>
                 <td>
                     <p-button label="Edit" severity="info" class="mr-3" [routerLink]="['/user-form', user.id]" />
-                    <p-button label="Delete" severity="danger" class="mr-3" (click)="deleteUser(user.id)"/>
                 </td>
             </tr>
         </ng-template>
