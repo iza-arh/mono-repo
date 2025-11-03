@@ -9,6 +9,10 @@ export class UserService {
   constructor(private http: HttpClient) {
   }
 
+  createUser(userData: UserInterface) {
+    return this.http.post('http://localhost:8080/api/users', userData);
+  }
+
   getUsers() {
     return this.http.get<UserInterface[]>('http://localhost:8080/api/users');
   }
