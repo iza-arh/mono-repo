@@ -28,11 +28,15 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: urbanofix-backend
+
+    env_file:
+      - ./backend/.env
+      
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/urbanofix_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://ep-lively-hall-adjpbzx7-pooler.c-2.us-east-1.aws.neon.tech:5432/UrbanoFix_db?sslmode=require
       SPRING_DATASOURCE_USERNAME: neondb_owner
       SPRING_DATASOURCE_PASSWORD: npg_C92PucfhVaXB
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
     depends_on:
       db:
         condition: service_healthy
