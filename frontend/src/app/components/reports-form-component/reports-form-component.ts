@@ -21,6 +21,7 @@ import { HttpClient } from '@angular/common/http';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ReportService } from '../../services/report-service';
 import { AuthService } from '@auth0/auth0-angular';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -34,7 +35,7 @@ import { AuthService } from '@auth0/auth0-angular';
 export class ReportsFormComponent implements OnInit {
 
 
-  constructor(private categoryService: CategoryService, private zoneService: ZoneService, private http: HttpClient, private reportService: ReportService, private auth: AuthService) {
+  constructor(private categoryService: CategoryService, private zoneService: ZoneService, private http: HttpClient, private reportService: ReportService, private auth: AuthService, private route: ActivatedRoute) {
 
   }
 
@@ -182,6 +183,12 @@ export class ReportsFormComponent implements OnInit {
     this.auth.user$.subscribe(user => {
       this.report.reporterId = user?.sub || '';
     })
-    this.obtenerUbicacion()
+    this.obtenerUbicacion(),
+      this.route.paramMap.subscribe(param => {
+        if (param.get('id') !== null) {
+          this.reportService.getReport(param.get('id') || "").subscribe(res => {
+          });
+        }
+      })
   }
 }

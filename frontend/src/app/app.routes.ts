@@ -53,6 +53,7 @@ export const routes: Routes = [
             { path: 'report-form', component: ReportsFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] }},
             { path: 'report-list', component: ReportListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] }},
             { path: 'my-report-list', component: MyReportListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
+            { path: 'report-form/:id', component: ReportsFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
         ],
     },
 ];
