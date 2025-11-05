@@ -2,76 +2,115 @@
 
 # Proyecto UrbanoFix
 
----Este documento describe los pasos necesarios para levantar el entorno de desarrollo local del backend de UrbanoFix.
+En este proyecto creamos lo que es una aplicacion el cual va ayudar a los usarios a reportar diferente daños
+de las calles, estructuras de partes de la cuidad en la cual el usuario tomara una foto y reportara desde su ubicacion gps
+el daño y este creara un reporte.
 
-El proyecto utiliza Spring Boot para la aplicación y PostgreSQL para la base de datos. Para facilitar la instalación, todo el entorno está "dockerizado" y se gestiona a través de docker-compose.---
+---
 
-# Requisitos previos
+##  Requisitos Previos (Para todo el proyecto)
 
 Antes de empezar, asegúrate de tener instaladas las siguientes herramientas en tu sistema:
 
-1. Git: Para clonar el repositorio.
-2. Java (JDK) 21: La aplicación está construida con Java 21. Puedes verificar tu versión con java --version.
-3. Docker Desktop (o Docker Engine): Esta es la herramienta clave. La usaremos para levantar la base de datos PostgreSQL con PostGIS y la aplicación Spring Boot.
+1.  **Git:** Para clonar el repositorio.
+```bash
+git clone --branch dev https://github.com/iza-arh/mono-repo.git mono-repo
+```
+2.  **Docker Desktop (o Docker Engine):** Para levantar el backend y la base de datos.
+    * [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop/)
+3.  **Java (JDK) 21:** Para el backend. Puedes verificar tu versión con `java --version`.
+4.  **Node.js (v18 o superior):** Para el frontend. Puedes verificar tu versión con `node -v`.
+---
 
-Descargar Docker Desktop: https://www.docker.com/products/docker-desktop/
+##  Configuración del Backend (API + Base de Datos)
 
-# Configuración del Entorno
+El backend utiliza **Spring Boot** y **PostgreSQL (con PostGIS)**. Se ejecuta 100% dentro de Docker usando `docker-compose`.
 
-Sigue estos pasos para configurar el proyecto en tu máquina local.
+### 1. Configurar las Variables de Entorno (`.env`)
 
-1. Clonar el Repositorio
-Abre tu terminal y clona el proyecto (si aún no lo has hecho):
+El backend necesita un archivo `.env` para gestionar los secretos.
 
---- git clone [URL-DE-TU-REPOSITORIO-GIT]
-cd [nombre-del-repo]/backend ----
+1.  **Navega a la carpeta del backend:**
+```bash
+cd mono-repo/backend
+```
+2.  **Poner el archivo `.env` en el backend que se compartio**
+El archivo .env lo ponemos dentro del backend
 
-2. Configurar las Variables de Entorno (.env)
-La aplicación utiliza un archivo .env para gestionar todas las configuraciones sensibles (credenciales de base de datos, API keys, etc.). Este archivo es privado, no se sube a GitHub.
+### 2. Levantar el Backend
 
-**Crea tu archivo .env: En la raíz de la carpeta backend/, encontrarás una plantilla llamada .env.example. Haz una copia de este archivo y renómbrala a .env.** 
+1. primero se dirige al backend
+```bash
+cd backend
+```
+2. Ejecutamos el comando de maven para construir el proyecto
+```bash
+./mvnw package
+```
+3. regresamos ala **raíz de tu proyecto (`mono-repo/`)**, ejecuta el siguiente comando:
+##
+```bash
+docker-compose up --build
+```
 
-cp .env.example .env
+### Configuración del Frontend
 
-**Edita tu archivo .env: Abre el nuevo archivo .env con tu editor de código. Verás que la mayoría de las variables (como la URL de la base de datos de Docker) ya están configuradas para desarrollo local.**
+## Primero antes de configurar el fronted tenemos que instalar las dependencias
+1. @angular/material (Angular Material)
+2. primeng (PrimeNG)
+3. primeicons (PrimeNG Icons)
+4. @auth0/auth0-angular (Autenticación)
+5. tailwindcss (Tailwind CSS)
+6. @angular/google-maps (Google Maps)
 
-Solo necesitas rellenar los secretos reales que faltan:
+## Comando para instalar las dependecias
+```bash
+cd mono-repo/frontend
+npm install
+```
 
---(las variables de SPRING_DATASOURCE_... ya están bien para Docker)
+## Configuración el Entorno (Auth0)
+1. Ve a frontend/src/app.config.ts/.
+2. Edita el archivo app.config.ts 
+3. Rellena tus credenciales de Auth0:
 
-# --- Seguridad JWT ---
-# (Genera tu propia clave secreta, larga y aleatoria)
-JWT_SECRET=TU_CLAVE_SECRETA_PARA_JWT
+```bash
+export const environment = {
+  production: false,
+  auth: {
+    domain: 'dev-vze6sh41xjfo0djb.us.auth0.com',
+    clientId: 'iXe2B0ROM3gqACZvH5HVRqdbIDiIjhLz',
+  },
+};
+```
+## Levantar el Frontend
+Una vez instaladas las dependencias, inicia el servidor de desarrollo de Angular:
+# (Estando en la carpeta 'frontend/')
+```bash
+ng serve
+```
 
-# --- Configuración de Email (SMTP) ---
-EMAIL_USERNAME=tu-correo@gmail.com
-EMAIL_PASSWORD=tu-contraseña-de-aplicacion-de-email ----
+## Para crear y asignar lo que es el docker-compose.yml ##
 
-# Cómo Levantar el Entorno (Docker Compose)
-Este es el método principal para ejecutar todo el entorno (Backend + Base de Datos) con un solo comando.
+1. Se creo la docker-compose.yml
+2. Se agrego la base de datos
+3. se agrego el backend
+4. se agreggo el frontend
+5. se agrego una indicacion el cual docke-compose tiene encontrar la variables de entorno
 
-1. Construir y Levantar: Estando en la raíz de tu proyecto (mono-repo/), ejecuta el siguiente comando:
+## Se tiene que ir ala carpeta raiz del proyecto ##
+**En este caso se va mono-repo/**
+## El comando que se tiene que usar para levantar en docker ##
+```bash
+docker-compose up --build
+```
 
---- docker-compose up --build ---
 
-2. ¿Qué está pasando?
 
---- Docker descargará la imagen de postgis/postgis.
 
---- Ejecutará tu script db-init/init.sql para crear los ENUMs y activar las extensiones de la base de datos.
 
---- construirá tu aplicación Spring Boot (usando backend/Dockerfile). --
 
----Tu backend se conectará a la base de datos de Docker usando las credenciales de tu archivo .env.
 
----¡Tu backend estará corriendo en http://localhost:8081!
-
-3. Comandos Útiles de Docker
-Para detener el entorno: Presiona Ctrl + C en la terminal. O, desde otra terminal, ejecuta:
---- docker-compose down ---
-
-5. Para reiniciar la base de datos (Borrar todos los datos): Si necesitas empezar con una base de datos limpia, ejecuta:
---- docker-compose down -v ---
 
 
 
