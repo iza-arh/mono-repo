@@ -27,19 +27,13 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    const storedUser = localStorage.getItem('myUser');
-    if (storedUser) {
-      return
-    }
-
     this.auth.user$.subscribe(user => {
+      console.log(user)
       this.myUser.id = user?.sub || "";
       this.myUser.name = user?.given_name || "";
       this.myUser.lastName = user?.family_name || "";
       this.myUser.email = user?.email || "";
       this.userService.createUser(this.myUser).subscribe(res => {
-        localStorage.setItem('myUser', JSON.stringify(this.myUser));
       });
     });
   }
