@@ -7,11 +7,14 @@ import { UserListComponent } from './components/user-list-component/user-list-co
 import { UserFormComponent } from './components/user-form-component/user-form-component';
 import { ReportsFormComponent } from './components/reports-form-component/reports-form-component';
 import { ReportListComponent } from './components/report-list-component/report-list-component';
+
+import { MyReportListComponent } from './components/my-report-list-component/my-report-list-component';
 import { LoginComponent } from './auth/login/login.component/login.component';
 import { AuthGuard } from '@auth0/auth0-angular';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { HomeComponent } from './components/home/home';
 import { RoleGuard } from './role.guards';
+
 
 export const routes: Routes = [
     //Default redirection
@@ -49,8 +52,8 @@ export const routes: Routes = [
             { path: 'home', component: HomeComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
             { path: 'report-form', component: ReportsFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] }},
             { path: 'report-list', component: ReportListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] }},
+            { path: 'my-report-list', component: MyReportListComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
+            { path: 'report-form/:id', component: ReportsFormComponent, canActivate: [RoleGuard], data: { roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] } },
         ],
     },
-
-
 ];
