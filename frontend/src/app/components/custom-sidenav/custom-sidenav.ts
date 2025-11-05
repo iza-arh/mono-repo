@@ -30,7 +30,6 @@ export class CustomSidenav implements OnInit {
     { path: '/zone-form', icon: 'description', label: 'add zone', roles: ['Administrador'] },
     { path: '/zone-list', icon: 'view_list', label: 'show zones', roles: ['Administrador'] },
     { path: '/user-list', icon: 'view_list', label: 'show users', roles: ['Administrador'] },
-    { path: '/user-form', icon: 'person_add', label: 'add user', roles: ['Administrador'] },
     { path: '/report-form', icon: 'report_problem', label: 'add report', roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] },
     { path: '/report-list', icon: 'list_alt', label: 'show reports', roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] },
     { path: '/my-report-list', icon: 'view_list', label: 'my reports', roles: ['Administrador', 'Técnico', 'Encargado municipal', 'Ciudadano'] },
