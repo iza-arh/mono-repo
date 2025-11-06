@@ -3,10 +3,12 @@ services:
     
     image: postgis/postgis:16-3.4
     container_name: urbanofix-db
+    env_file:
+      - ./backend/.env
     environment:
-      POSTGRES_DB: urbanofix_db
-      POSTGRES_USER: neondb_owner
-      POSTGRES_PASSWORD: npg_C92PucfhVaXB
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -32,11 +34,6 @@ services:
     env_file:
       - ./backend/.env
       
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://ep-lively-hall-adjpbzx7-pooler.c-2.us-east-1.aws.neon.tech:5432/UrbanoFix_db?sslmode=require
-      SPRING_DATASOURCE_USERNAME: neondb_owner
-      SPRING_DATASOURCE_PASSWORD: npg_C92PucfhVaXB
-      SPRING_JPA_HIBERNATE_DDL_AUTO: none
     depends_on:
       db:
         condition: service_healthy
