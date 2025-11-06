@@ -3,6 +3,7 @@ services:
     
     image: postgis/postgis:16-3.4
     container_name: urbanofix-db
+
     environment:
       POSTGRES_DB: urbanofix_db
       POSTGRES_USER: neondb_owner
@@ -28,19 +29,30 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: urbanofix-backend
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/urbanofix_db
-      SPRING_DATASOURCE_USERNAME: neondb_owner
-      SPRING_DATASOURCE_PASSWORD: npg_C92PucfhVaXB
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+    env_file:
+      - ./backend/.env
+
+    ports:
+      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8081:8080"
     networks:
       - app-net
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: urbanofix-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - app-net
 
 volumes:
   db_data:
