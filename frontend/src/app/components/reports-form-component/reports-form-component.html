@@ -1,6 +1,6 @@
 <div *ngIf="!isActive" class="card flex justify-content-center">
     <p-card header="Create new report" class="mt-5 mb-5">
-        <form #reportForm="ngForm" (ngSubmit)="createReport(reportForm.value, reportForm)">
+        <form #reportForm="ngForm" (ngSubmit)="createOrUpdateReport(reportForm.value, reportForm)">
             <div class="flex flex-column justify-content-center align-items-center mt-5">
                 <p-floatlabel>
                     <input pInputText id="titleInput" autocomplete="off" name="title" [(ngModel)]="report.title"
