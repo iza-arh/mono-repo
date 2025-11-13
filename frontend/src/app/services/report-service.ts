@@ -14,18 +14,22 @@ export class ReportService {
     return this.http.post<ReportInterface>('http://localhost:8080/api/reports', reportData)
   }
 
-  getReports(){
+  getReports() {
     return this.http.get<GetReport[]>('http://localhost:8080/api/reports');
   }
 
-  getUserReports(userId: string){
+  getUserReports(userId: string) {
     const encodedUserId = encodeURIComponent(userId);
     const url = `http://localhost:8080/api/reports/reporter/${encodedUserId}`;
-        return this.http.get<GetReport[]>(url);
+    return this.http.get<GetReport[]>(url);
   }
 
-  getReport(reportId: string){
+  getReport(reportId: string) {
     return this.http.get<GetReport>(`http://localhost:8080/api/reports/${reportId}`);
+  }
+
+  partiallyUpdateReport(reportId: string, reportData: ReportInterface) {
+    return this.http.patch<GetReport>(`http://localhost:8080/api/reports/${reportId}`, reportData);
   }
 
 }
