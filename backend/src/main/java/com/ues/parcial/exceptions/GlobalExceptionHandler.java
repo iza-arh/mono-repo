@@ -10,8 +10,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.ues.parcial.exceptions.fileExceptions.CloudStorageException;
+import com.ues.parcial.exceptions.fileExceptions.InvalidFileException;
 
 // Global handler for all exceptions in the application.
 
@@ -42,6 +45,26 @@ public class GlobalExceptionHandler  {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    // When an uploaded file exceeds the maximum allowed size
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleMaxSizeException(MaxUploadSizeExceededException ex) {
+        return buildResponse(HttpStatus.PAYLOAD_TOO_LARGE, ex.getMessage());
+    }
+
+    // When there are issues with cloud storage operations
+    @ExceptionHandler(CloudStorageException.class)
+    public ResponseEntity<Map<String, Object>> handleCloudStorageError(CloudStorageException ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
+    // When an uploaded file is invalid (wrong format, too large, etc.)
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidFile (InvalidFileException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+    
+
+    // When there are issues sending notifications (e.g., email, SMS)
     @ExceptionHandler(NotificationSendException.class)
     public ResponseEntity<Map<String, Object>> handleNotificationException(NotificationSendException ex) {
         return buildResponse(HttpStatus.BAD_GATEWAY, ex.getMessage());
