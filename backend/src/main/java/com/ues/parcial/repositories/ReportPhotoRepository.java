@@ -18,6 +18,9 @@ public interface ReportPhotoRepository extends JpaRepository<ReportPhotos, UUID>
     // *All photos associated with a report by report ID*
     List<ReportPhotos> findByReport_Id(UUID reportId);
 
+    // *All active photos associated with a report by report ID*
+    List<ReportPhotos> findByReportIdAndIsActiveTrue(UUID reportId);
+
     // *All photos uploaded by a specific user by user ID*
     List<ReportPhotos> findByUploadedBy_Id(String userId);
 

@@ -26,7 +26,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     List<Report> findByCategory(Category category);
     
     // finds reports by the user who reported them
-    List<Report> findByReporter(User reporter);
+    List<Report> findByReporterAndIsActiveTrue(User reporter);
 
     // finds reports that are marked as duplicates of other reports
     List<Report> findByDuplicateOfNotNull();

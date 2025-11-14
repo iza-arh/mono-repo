@@ -17,35 +17,37 @@ import com.ues.parcial.dtos.report.ReportRequestDto;
 import com.ues.parcial.dtos.report.ReportResponseDto;
 import com.ues.parcial.dtos.report.ReportUpdateDto;
 import com.ues.parcial.dtos.report.ReportUpdateStateDto;
+import com.ues.parcial.mappers.report.ReportMapper;
 import com.ues.parcial.services.ReportService;
 
 import jakarta.validation.Valid;
-
 
 @RestController
 @RequestMapping("/api/reports")
 @CrossOrigin(origins = "*")
 public class ReportController {
     private final ReportService reportService;
+    private final ReportMapper reportMapper;
 
-    public ReportController(ReportService reportService){
+    public ReportController(ReportService reportService, ReportMapper reportMapper) {
         this.reportService = reportService;
+        this.reportMapper = reportMapper;
     }
 
     @PostMapping
     public ResponseEntity<?> createReport(@Valid @RequestBody ReportRequestDto dto) {
-        ReportResponseDto responseDto = reportService.toResponseDto(reportService.createReport(dto));
+        ReportResponseDto responseDto = reportMapper.toResponseDto(reportService.createReport(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateReport(@PathVariable UUID id, @RequestBody ReportUpdateDto dto) {
-        return ResponseEntity.ok(reportService.toResponseDto(reportService.updateReport(id, dto)));
+        return ResponseEntity.ok(reportMapper.toResponseDto(reportService.updateReport(id, dto)));
     }
 
     @PatchMapping("/{id}/state")
     public ResponseEntity<?> updateReportState(@PathVariable UUID id, @Valid @RequestBody ReportUpdateStateDto dto) {
-        return ResponseEntity.ok(reportService.toResponseDto(reportService.updateReportState(id, dto)));
+        return ResponseEntity.ok(reportMapper.toResponseDto(reportService.updateReportState(id, dto)));
     }
 
     @PatchMapping("/{id}/deactivate")
@@ -56,16 +58,16 @@ public class ReportController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getReport(@PathVariable UUID id) {
-        return ResponseEntity.ok(reportService.toResponseDto(reportService.getReportById(id)));
+        return ResponseEntity.ok(reportMapper.toResponseDto(reportService.getReportById(id)));
     }
 
     @GetMapping
     public ResponseEntity<?> getActiveReports() {
-        return ResponseEntity.ok(reportService.toResponseDtoList(reportService.getAllActiveReports()));
+        return ResponseEntity.ok(reportMapper.toResponseDto(reportService.getAllActiveReports()));
     }
 
     @GetMapping("/reporter/{reporterId}")
     public ResponseEntity<?> getReportsByReporter(@PathVariable String reporterId) {
-        return ResponseEntity.ok(reportService.toResponseDtoList(reportService.getReportsByReporter(reporterId)));
+        return ResponseEntity.ok(reportMapper.toResponseDto(reportService.getReportsByReporter(reporterId)));
     }
 }
