@@ -3,7 +3,7 @@ export interface GetReport {
     title: string | null,
     description: string | null,
     categoryId: {
-        id: number | null,
+        id: string | null,
         name: string | null
     },
     zoneId: {

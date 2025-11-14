@@ -22,6 +22,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ReportService } from '../../services/report-service';
 import { AuthService } from '@auth0/auth0-angular';
 import { ActivatedRoute } from '@angular/router';
+import { GetReport } from '../../models/interface/get-report.interface';
 
 
 @Component({
@@ -152,11 +153,7 @@ export class ReportsFormComponent implements OnInit {
     }
   }
 
-  createReport(formValue: ReportInterface, form: NgForm) {
-    const formData = new FormData();
-    if (this.selectedFile) {
-      formData.append('photo', this.selectedFile);
-    }
+  fromFormToReport(formValue: ReportInterface) {
     this.report.title = formValue.title;
     this.report.description = formValue.description;
     this.report.categoryId = formValue.categoryId;
@@ -166,10 +163,24 @@ export class ReportsFormComponent implements OnInit {
     this.report.occurredAt = formValue.occurredAt;
     this.report.locationText = formValue.locationText;
     this.report.occurredAt = this.formattedDate();
-    if (this.report.reporterId !== null && this.report.reporterId !== '') {
+  }
+
+  createOrUpdateReport(formValue: ReportInterface, form: NgForm) {
+    const formData = new FormData();
+    if (this.selectedFile) {
+      formData.append('photo', this.selectedFile);
+    }
+    this.fromFormToReport(formValue);
+    if (this.report.reporterId !== null && this.report.reporterId !== '' && this.report.id == null) {
       this.reportService.createReport(this.report).subscribe(res => {
         this.clearForm(form);
       })
+    }
+    if (this.report.reporterId !== null && this.report.reporterId !== '' && this.report.id !== null) {
+      this.reportService.partiallyUpdateReport(this.report.id, this.report).subscribe(res => {
+        this.clearForm(form);
+      })
+
     }
   }
 
@@ -183,12 +194,36 @@ export class ReportsFormComponent implements OnInit {
     this.auth.user$.subscribe(user => {
       this.report.reporterId = user?.sub || '';
     })
-    this.obtenerUbicacion(),
-      this.route.paramMap.subscribe(param => {
-        if (param.get('id') !== null) {
-          this.reportService.getReport(param.get('id') || "").subscribe(res => {
-          });
-        }
-      })
+    this.obtenerUbicacion()
+    this.route.paramMap.subscribe(param => {
+      if (param.get('id') !== null) {
+        this.reportService.getReport(param.get('id') || "").subscribe(res => {
+          this.report.id = res.id
+          this.report.title = res.title
+          this.report.description = res.description
+          this.report.categoryId = res.categoryId.id
+          this.report.zoneId = res.zoneId.id
+          this.report.severity = res.severity
+          this.report.state = res.state
+          this.report.priority = res.priority
+          this.report.occurredAt = res.occurredAt
+          this.report.locationText = res.locationText
+          this.point.lng = res.geom.point[0]
+          this.point.lat = res.geom.point[1]
+          this.report.geom.point[0] = res.geom.point[0]
+          this.report.geom.point[1] = res.geom.point[1]
+          if (res.occurredAt) {
+            const dateObj = new Date(res.occurredAt);
+            this.date = new Date(dateObj.toISOString().split("T")[0]);
+
+            const hours = dateObj.getUTCHours();
+            const minutes = dateObj.getUTCMinutes();
+
+            const today = new Date();
+            this.time = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+          }
+        });
+      }
+    })
   }
 }
