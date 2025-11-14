@@ -131,6 +131,6 @@ public class ReportService {
         User reporter = userRepository.findById(reporterId)
             .orElseThrow(() -> new ResourceNotFoundException("Reporter not found"));
 
-        return reportRepository.findByReporter(reporter);
+        return reportRepository.findByReporterAndIsActiveTrue(reporter);
     }
 }
