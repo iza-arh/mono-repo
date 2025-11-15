@@ -28,7 +28,7 @@
                 <td>
                     <p-button label="See complete" severity="help" class="mr-3" (click)="showCompleteReport(report.id)"/>
                     <p-button label="Edit" severity="info" class="mr-3" [routerLink]="['/report-form', report.id]"/>
-                    <p-button label="Delete" severity="danger" class="mr-3" />
+                    <p-button label="Delete" severity="danger" class="mr-3" (click)="deleteReport(report.id)"/>
                 </td>
             </tr>
         </ng-template>

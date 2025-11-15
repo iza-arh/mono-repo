@@ -103,6 +103,11 @@ export class MyReportListComponent implements OnInit {
     this.isActiveWholedata = false;
   }
 
+  deleteReport(reportId: string) {
+    if (!reportId) return;
+    this.reportService.deleteReport(reportId);
+  }
+
   ngOnInit(): void {
     this.auth.user$.subscribe(user => {
       this.reportService.getUserReports(user?.sub || '').subscribe(res => {
