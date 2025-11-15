@@ -110,6 +110,10 @@ export class MyReportListComponent implements OnInit {
     this.isActiveWholedata = false;
   }
 
+  showErrorMessage(message: string) {
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+  }
+
   successfullyDelete(message: string) {
     this.messageService.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
   }
@@ -123,6 +127,9 @@ export class MyReportListComponent implements OnInit {
         this.reports = res;
         this.successfullyDelete('Report was deleted');
       },
+      error: err => {
+        this.showErrorMessage(err.error.message);
+      }
     }
      );
   }
