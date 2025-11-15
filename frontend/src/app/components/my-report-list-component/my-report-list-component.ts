@@ -9,17 +9,22 @@ import { OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
 import { CardModule } from 'primeng/card';
 import { RouterLink } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast';
+import { switchMap } from 'rxjs';
+
 
 @Component({
   selector: 'app-my-report-list-component',
-  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule, CardModule, RouterLink],
+  imports: [TableModule, ButtonModule, GoogleMap, MapAdvancedMarker, CommonModule, CardModule, RouterLink, Toast],
   standalone: true,
   templateUrl: './my-report-list-component.html',
-  styleUrl: './my-report-list-component.css'
+  styleUrl: './my-report-list-component.css',
+  providers: [MessageService]
 })
 export class MyReportListComponent implements OnInit {
 
-  constructor(private reportService: ReportService, private auth: AuthService) {
+  constructor(private reportService: ReportService, private auth: AuthService, private messageService: MessageService) {
   }
 
   userId: string = '';
@@ -105,15 +110,23 @@ export class MyReportListComponent implements OnInit {
     this.isActiveWholedata = false;
   }
 
+  successfullyDelete(message: string) {
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+  }
+
   deleteReport(reportId: string) {
     if (!reportId) return;
-    this.reportService.deleteReport(reportId).subscribe(res => {
-      this.reportService.getUserReports(this.userId).subscribe(res =>{
+    this.reportService.deleteReport(reportId).pipe(
+      switchMap(() => this.reportService.getUserReports(this.userId))
+    ).subscribe({
+      next: res => {
         this.reports = res;
-
-      })
-    });
+        this.successfullyDelete('Report was deleted');
+      },
+    }
+     );
   }
+
 
   ngOnInit(): void {
     this.auth.user$.subscribe(user => {
