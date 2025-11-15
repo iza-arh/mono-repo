@@ -22,6 +22,8 @@ export class MyReportListComponent implements OnInit {
   constructor(private reportService: ReportService, private auth: AuthService) {
   }
 
+  userId: string = '';
+
   report: GetReport = {
     id: "",
     title: "",
@@ -105,11 +107,17 @@ export class MyReportListComponent implements OnInit {
 
   deleteReport(reportId: string) {
     if (!reportId) return;
-    this.reportService.deleteReport(reportId);
+    this.reportService.deleteReport(reportId).subscribe(res => {
+      this.reportService.getUserReports(this.userId).subscribe(res =>{
+        this.reports = res;
+
+      })
+    });
   }
 
   ngOnInit(): void {
     this.auth.user$.subscribe(user => {
+      this.userId = user?.sub || '';
       this.reportService.getUserReports(user?.sub || '').subscribe(res => {
         this.reports = res;
       })
