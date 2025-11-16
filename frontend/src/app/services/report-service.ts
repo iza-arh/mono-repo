@@ -32,4 +32,9 @@ export class ReportService {
     return this.http.patch<GetReport>(`http://localhost:8080/api/reports/${reportId}`, reportData);
   }
 
+  deleteReport(reportId: string) {
+    return this.http.patch(`http://localhost:8080/api/reports/${reportId}/deactivate`, {});
+  }
+
+
 }

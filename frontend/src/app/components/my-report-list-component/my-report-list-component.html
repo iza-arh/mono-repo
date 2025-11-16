@@ -26,14 +26,17 @@
                     </p-button>
                 </td>
                 <td>
-                    <p-button label="See complete" severity="help" class="mr-3" (click)="showCompleteReport(report.id)"/>
-                    <p-button label="Edit" severity="info" class="mr-3" [routerLink]="['/report-form', report.id]"/>
-                    <p-button label="Delete" severity="danger" class="mr-3" />
+                    <p-button label="See complete" severity="help" class="mr-3"
+                        (click)="showCompleteReport(report.id)" />
+                    <p-button label="Edit" severity="info" class="mr-3" [routerLink]="['/report-form', report.id]" />
+                    <p-button label="Delete" severity="danger" class="mr-3" (click)="deleteReport(report.id)" />
                 </td>
             </tr>
         </ng-template>
     </p-table>
+    <p-toast />
 </div>
+
 
 
 <div *ngIf="isActiveWholedata && !isActiveMap" class="card flex justify-content-center">
@@ -65,7 +68,7 @@
             <p>{{report.locationText}}</p>
         </div>
         <div class="flex justify-content-center mt-5">
-            <p-button label="Complete" severity="success" (click)="hideCompleteReport()"/>
+            <p-button label="Complete" severity="success" (click)="hideCompleteReport()" />
         </div>
     </p-card>
 </div>
