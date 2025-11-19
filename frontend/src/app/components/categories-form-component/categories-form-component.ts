@@ -30,6 +30,9 @@ export class CategoriesFormComponent implements OnInit {
     code: ""
   }
 
+  showErrorToast(message: string) {
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+  }
 
   showSuccessToast(message: string) {
     this.messageService.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
@@ -49,6 +52,9 @@ export class CategoriesFormComponent implements OnInit {
           console.log(response);
           this.cleanForm(Form);
           this.showSuccessToast('Successfully updated');
+        },
+        error: (err) => {
+          this.showErrorToast(err.error.message);
         }
       }
       )
