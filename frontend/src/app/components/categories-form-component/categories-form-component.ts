@@ -59,6 +59,11 @@ export class CategoriesFormComponent implements OnInit {
       }
       )
     } else {
+      this.categoryService.createCategory(formvalue).subscribe({
+        next: (response) => {
+          this.cleanForm(Form);
+          this.showSuccessToast('Successfully created');
+        },
       })
     }
   }
