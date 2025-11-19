@@ -64,6 +64,9 @@ export class CategoriesFormComponent implements OnInit {
           this.cleanForm(Form);
           this.showSuccessToast('Successfully created');
         },
+        error: (err) => {
+          this.showErrorToast(err.error.message);
+        }
       })
     }
   }
