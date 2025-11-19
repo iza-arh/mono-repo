@@ -9,16 +9,19 @@ import { CommonModule } from '@angular/common';
 import { CategoryService } from '../../services/category-service';
 import { ActivatedRoute } from '@angular/router';
 import { OnInit } from '@angular/core';
+import { MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-categories-form-component',
-  imports: [CardModule, InputTextModule, FormsModule, FloatLabel, ButtonModule, CommonModule],
+  imports: [CardModule, InputTextModule, FormsModule, FloatLabel, ButtonModule, CommonModule, Toast],
   templateUrl: './categories-form-component.html',
-  styleUrl: './categories-form-component.css'
+  styleUrl: './categories-form-component.css',
+  providers: [MessageService]
 })
 export class CategoriesFormComponent implements OnInit {
 
-  constructor(private categoryService: CategoryService, private route: ActivatedRoute) {
+  constructor(private categoryService: CategoryService, private route: ActivatedRoute, private messageService: MessageService) {
   }
 
   category: Category = {
@@ -27,7 +30,15 @@ export class CategoriesFormComponent implements OnInit {
     code: ""
   }
 
-  cleanForm(Form: NgForm){
+  showErrorToast(message: string) {
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+  }
+
+  showSuccessToast(message: string) {
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+  }
+
+  cleanForm(Form: NgForm) {
     this.category.id = null;
     this.category.name = "";
     this.category.code = "";
@@ -36,14 +47,26 @@ export class CategoriesFormComponent implements OnInit {
 
   createOrUpdateCategory(formvalue: Category, Form: NgForm) {
     if (this.category.id !== null) {
-      this.categoryService.partiallyUpdateCategory(this.category.id, formvalue).subscribe((response) => {
-        console.log(response)
-        this.cleanForm(Form);
-      })
+      this.categoryService.partiallyUpdateCategory(this.category.id, formvalue).subscribe({
+        next: (response) => {
+          console.log(response);
+          this.cleanForm(Form);
+          this.showSuccessToast('Successfully updated');
+        },
+        error: (err) => {
+          this.showErrorToast(err.error.message);
+        }
+      }
+      )
     } else {
-      this.categoryService.createCategory(formvalue).subscribe((response) => {
-        console.log(response)
-        this.cleanForm(Form)
+      this.categoryService.createCategory(formvalue).subscribe({
+        next: (response) => {
+          this.cleanForm(Form);
+          this.showSuccessToast('Successfully created');
+        },
+        error: (err) => {
+          this.showErrorToast(err.error.message);
+        }
       })
     }
   }
