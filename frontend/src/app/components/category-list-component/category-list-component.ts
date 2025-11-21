@@ -7,6 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
+import { switchMap } from 'rxjs';
+
 
 @Component({
   selector: 'app-category-list-component',
@@ -32,14 +34,20 @@ export class CategoryListComponent implements OnInit {
     this.messageService.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
   }
 
+  showErrorToast(message: string) {
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+  }
+
   deleteCategory(id: number) {
-    this.categoryService.deleteCategory(id).subscribe(() => {
-      this.categoryService.getCategories().subscribe({
-        next: (response) => {
-          this.categories = response;
-          this.showSuccessToast("Category was deleted")
-        }
-      })
-    })
+
+    this.categoryService.deleteCategory(id).pipe(
+      switchMap(() => this.categoryService.getCategories())
+    ).subscribe({
+      next: res => {
+        this.categories = res;
+        this.showSuccessToast("Category was deleted")
+      }
+    }
+    );
   }
 }
