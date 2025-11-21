@@ -34,9 +34,11 @@ export class CategoryListComponent implements OnInit {
 
   deleteCategory(id: number) {
     this.categoryService.deleteCategory(id).subscribe(() => {
-      this.categoryService.getCategories().subscribe((response) => {
-        this.categories = response;
-        this.showSuccessToast("Category was deleted")
+      this.categoryService.getCategories().subscribe({
+        next: (response) => {
+          this.categories = response;
+          this.showSuccessToast("Category was deleted")
+        }
       })
     })
   }
