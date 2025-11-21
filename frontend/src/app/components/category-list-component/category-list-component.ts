@@ -46,6 +46,16 @@ export class CategoryListComponent implements OnInit {
       next: res => {
         this.categories = res;
         this.showSuccessToast("Category was deleted")
+      },
+      error: (err) => {
+        let msg = 'Something went wrong';
+
+        if (err.status === 0) {
+          msg = 'Cannot connect to the server. Please try again later.';
+        } else if (err.error?.message) {
+          msg = err.error.message;
+        }
+        this.showErrorToast(msg);
       }
     }
     );
