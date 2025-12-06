@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: '/api',
+  apiUrl: 'https://urban-fix-ax1f.onrender.com/api',
 };
