@@ -96,6 +96,7 @@ export class ReportsFormComponent implements OnInit {
         (position) => {
           this.point.lat = position.coords.latitude;
           this.point.lng = position.coords.longitude;
+          this.report.geom.point = [this.point.lng, this.point.lat];
         },
         (error) => {
           console.error('Error al obtener la ubicación:', error.message);
