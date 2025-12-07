@@ -32,7 +32,7 @@ public class EmailConfig {
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", this.host);
         properties.put("mail.smtp.port", this.port); 
-        properties.put("mail.smtp.ssl.trust", this.host); 
+        properties.put("mail.smtp.ssl.trust", "*"); 
         return properties;
     }
 
